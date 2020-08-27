@@ -37,9 +37,9 @@ int lrIndex2 = 0;
 int car3 = +70;
 int lrIndex3 = 0;
 
-//Hiện thị văn bản lên màn hình
-const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_24;
-const int font2 = (int)GLUT_BITMAP_HELVETICA_18;
+// Thiết lập kiểu size font chữ
+const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_24; // kiểu font chữ và size của font chữ
+const int font2 = (int)GLUT_BITMAP_9_BY_15;
 const int font3 = (int)GLUT_BITMAP_8_BY_13;
 
 char s[30];
@@ -103,36 +103,36 @@ void startGame() {
 
 	////Road Middel Border
 	////TOP
-	//glColor3f(1.000, 1.000, 0.000);
-	//glBegin(GL_POLYGON);
-	//glVertex2f(48, roadDivTop + 80);
-	//glVertex2f(48, roadDivTop + 100);
-	//glVertex2f(52, roadDivTop + 100);
-	//glVertex2f(52, roadDivTop + 80);
-	//glEnd();
-	//roadDivTop--;
-	//if (roadDivTop<-100) {
-	//	roadDivTop = 20;
-	//	score++;
-	//}
+	glColor3f(0.412, 0.412, 0.412);
+	glBegin(GL_POLYGON);
+	glVertex2f(48, roadDivTop + 80);
+	glVertex2f(48, roadDivTop + 100);
+	glVertex2f(52, roadDivTop + 100);
+	glVertex2f(52, roadDivTop + 80);
+	glEnd();
+	roadDivTop--;
+	if (roadDivTop<-100) {
+		roadDivTop = 20;
+		score++;
+	}
 	////Midle
-	//glColor3f(1.000, 1.000, 0.000);
-	//glBegin(GL_POLYGON);
-	//glVertex2f(48, roadDivMdl + 40);
-	//glVertex2f(48, roadDivMdl + 60);
-	//glVertex2f(52, roadDivMdl + 60);
-	//glVertex2f(52, roadDivMdl + 40);
-	//glEnd();
+	glColor3f(0.412, 0.412, 0.412);
+	glBegin(GL_POLYGON);
+	glVertex2f(48, roadDivMdl + 40);
+	glVertex2f(48, roadDivMdl + 60);
+	glVertex2f(52, roadDivMdl + 60);
+	glVertex2f(52, roadDivMdl + 40);
+	glEnd();
 
 
 
-	//roadDivMdl--;
-	//if (roadDivMdl<-60) {
-	//	roadDivMdl = 60;
-	//	score++;
-	//}
+	roadDivMdl--;
+	if (roadDivMdl<-60) {
+		roadDivMdl = 60;
+		score++;
+	}
 	//Bottom
-	/*glColor3f(1.000, 1.000, 0.000);
+	glColor3f(0.412, 0.412, 0.412);
 	glBegin(GL_POLYGON);
 	glVertex2f(48, roadDivBtm + 0);
 	glVertex2f(48, roadDivBtm + 20);
@@ -143,7 +143,7 @@ void startGame() {
 	if (roadDivBtm<-20) {
 	roadDivBtm = 100;
 	score++;
-	}*/
+	}
 
 
 	//Score Board
@@ -160,11 +160,13 @@ void startGame() {
 	sprintf_s(buffer, "POINT: %d", score);
 	glColor3f(0.000, 1.000, 0.000);
 	renderBitmapString(80.5, 95, (void *)font3, buffer);
+
 	//Speed Print
 	char buffer1[50];
 	sprintf_s(buffer1, "SPEED: %dKm/h", FPS);
 	glColor3f(0.000, 1.000, 0.000);
 	renderBitmapString(80.5, 95 - 2, (void *)font3, buffer1);
+	
 	//level Print
 	if (score % 50 == 0) {
 		int last = score / 50;
@@ -199,6 +201,7 @@ void startGame() {
 	glVertex2f(lrIndex + 26, 1);
 	glVertex2f(lrIndex + 24, 4);
 
+	glColor3f(0.294, 0.000, 0.510);
 	glVertex2f(lrIndex + 24, 8);
 	glVertex2f(lrIndex + 28, 10);
 	
@@ -248,27 +251,38 @@ void startGame() {
 	if ((abs(lrIndex - lrIndex1)<8) && (car1 + 100<10)) {
 		start = 0;
 		gv = 1;
-
 	}
 
 	//Vật thể lạ
-		// Than cua vat the 2
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100 - 2);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 2);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100);
-	glEnd();
+	// đuôi của vật thể
+	
 
-	// Duoi cua vat the 2
+	// Than cua vat the 2
 	glColor3f(0.294, 0.000, 0.510);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26, car2 + 100);
-	glVertex2f(lrIndex2 + 26, car2 + 100 - 7);
-	glVertex2f(lrIndex2 + 28, car2 + 100 - 9);
-	glVertex2f(lrIndex2 + 30, car2 + 100 - 7);
-	glVertex2f(lrIndex2 + 30, car2 + 100);
+	glVertex2f(lrIndex2 + 26, car2 + 92);
+	glVertex2f(lrIndex2 + 24, car2 + 94);
+
+	glVertex2f(lrIndex2 + 24, car2 + 96);
+	glVertex2f(lrIndex2 + 26, car2 + 98);
+
+	glVertex2f(lrIndex2 + 28, car2 + 96);
+	glVertex2f(lrIndex2 + 30, car2 + 98);
+
+	glVertex2f(lrIndex2 + 32, car2 + 96);
+	glVertex2f(lrIndex2 + 32, car2 + 94);
+
+	glVertex2f(lrIndex2 + 30, car2 + 92);
+	glEnd();
+
+	// Doi cua vat the 2
+	glColor3f(1.000, 0.000, 1.000);
+	glBegin(GL_POLYGON);
+	glVertex2f(lrIndex2 + 24, car2 + 100);
+	glVertex2f(lrIndex2 + 24, car2 + 98);
+	glVertex2f(lrIndex2 + 28, car2 + 96);
+	glVertex2f(lrIndex2 + 32, car2 + 98);
+	glVertex2f(lrIndex2 + 32, car2 + 100);
 	glEnd();
 
 	car2--;
@@ -283,28 +297,30 @@ void startGame() {
 	}
 
 
-	//Opposite car 3
-	glColor3f(0.000, 0.000, 0.000);
+	//Vật thể lạ 3
+	// Thân của vật thể
+	glColor3f(1.000, 0.500, 0.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100 - 4);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100 - 6);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100 - 6);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100 - 4);
-	glEnd();
-	glColor3f(0.000, 0.000, 0.000);
+	glVertex2f(lrIndex3 + 24, car3 + 98);
+	glVertex2f(lrIndex3 + 25, car3 + 99);
+
+	glVertex2f(lrIndex3 + 31, car3 + 99);
+	glVertex2f(lrIndex3 + 32, car3 + 98);
+	
+
+	//Đuôi vật thể
+	glColor3f(1.000, 1.000, 0.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100 - 2);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100 - 2);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100);
-	glEnd();
-	glColor3f(1.000, 0.271, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 26, car3 + 100);
-	glVertex2f(lrIndex3 + 26, car3 + 100 - 7);
-	glVertex2f(lrIndex3 + 28, car3 + 100 - 9);
-	glVertex2f(lrIndex3 + 30, car3 + 100 - 7);
-	glVertex2f(lrIndex3 + 30, car3 + 100);
+	glVertex2f(lrIndex3 + 24, car3 + 92);
+	glVertex2f(lrIndex3 + 24, car3 + 94);
+
+	glVertex2f(lrIndex3 + 26, car3 + 94);
+	glVertex2f(lrIndex3 + 28, car3 + 93);
+	glVertex2f(lrIndex3 + 30, car3 + 94);
+
+	glVertex2f(lrIndex3 + 32, car3 + 94);
+	glVertex2f(lrIndex3 + 32, car3 + 92);
+
 	glEnd();
 	car3--;
 	if (car3<-100) {
@@ -459,7 +475,7 @@ void fristDesign() {
 	//Text Information in Frist Page
 	if (gv == 1) {
 		glColor3f(1.000, 0.000, 0.000);
-		renderBitmapString(35, 60 + 10, (void *)font1, "GAME OVER");
+		renderBitmapString(40, 75, (void *)font2, "YOU LOSE :((");
 		glColor3f(1.000, 0.000, 0.000);
 		char buffer2[50];
 		sprintf_s(buffer2, "Your Score is : %d", score);
@@ -467,25 +483,21 @@ void fristDesign() {
 
 	}
 
-	glColor3f(1.000, 1.000, 0.000);
-	renderBitmapString(25, 80, (void *)font1, "The Galaxy Advanture 2020"); // vị trí tiêu đề xuất hiện trên màn hình
+	// vị trí tiêu đề xuất hiện trên màn hình
+	glColor3f(1.000, 0.000, 0.500);
+	renderBitmapString(24, 80, (void *)font1, "The Galaxy Advanture 2020"); 
 
+	// vị trí thông báo hướng dẫn
 	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START"); // 
+	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START"); 
 	renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
 
+	// vị trí hướng dẫn di chuyển
 	glColor3f(1.000, 1.000, 1.000);
 	renderBitmapString(30, 50 - 6 + 10, (void *)font3, "Press UP to increase Speed");
-	renderBitmapString(30, 50 - 8 + 10, (void *)font3, "Press DWON to decrease Speed");
+	renderBitmapString(30, 50 - 8 + 10, (void *)font3, "Press DOWN to decrease Speed");
 	renderBitmapString(30, 50 - 10 + 10, (void *)font3, "Press RIGHT to turn Right");
 	renderBitmapString(30, 50 - 12 + 10, (void *)font3, "Press LEFT to turn Left");
-
-
-	/*glColor3f(0.000, 1.000, 1.000);
-	renderBitmapString(30 - 5, 50 - 40, (void *)font3, "Project By:");
-	renderBitmapString(30 - 5, 50 - 43, (void *)font3, "Zunaid Mahdi");*/
-
-
 }
 
 
