@@ -1,4 +1,4 @@
-#include "Dependencies\glew\glew.h"
+﻿#include "Dependencies\glew\glew.h"
 #include "Dependencies\freeglut\freeglut.h"
 #include<windows.h>
 #include <stdlib.h>
@@ -9,15 +9,15 @@
 // Nguyen Quoc Anh - -1711061484 - 17DTHA6
 // Nguyen Hoang Cong Duy - 1711061525 - 17DTHA6
 
-//Game Speed
+// Tốc độ của game
 int FPS = 50;
 
-//Game Track
+//Điều kiện game
 int start = 0;
 int gv = 0;
 int level = 0;
 
-//Track Score
+//Bảng số
 int score = 0;
 
 //Form move track
@@ -37,7 +37,7 @@ int lrIndex2 = 0;
 int car3 = +70;
 int lrIndex3 = 0;
 
-//For Display TEXT
+//Hiện thị văn bản lên màn hình
 const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_24;
 const int font2 = (int)GLUT_BITMAP_HELVETICA_18;
 const int font3 = (int)GLUT_BITMAP_8_BY_13;
@@ -51,6 +51,7 @@ void renderBitmapString(float x, float y, void *font, const char *string) {
 	}
 }
 
+// Vẽ Đá
 void tree(int x, int y) {
 	int newx = x;
 	int newy = y;
@@ -156,12 +157,12 @@ void startGame() {
 
 	//Print Score
 	char buffer[50];
-	sprintf_s(buffer, "SCORE: %d", score);
+	sprintf_s(buffer, "POINT: %d", score);
 	glColor3f(0.000, 1.000, 0.000);
 	renderBitmapString(80.5, 95, (void *)font3, buffer);
 	//Speed Print
 	char buffer1[50];
-	sprintf_s(buffer1, "SPEED:%dKm/h", FPS);
+	sprintf_s(buffer1, "SPEED: %dKm/h", FPS);
 	glColor3f(0.000, 1.000, 0.000);
 	renderBitmapString(80.5, 95 - 2, (void *)font3, buffer1);
 	//level Print
@@ -173,6 +174,7 @@ void startGame() {
 
 		}
 	}
+
 	char level_buffer[50];
 	sprintf_s(level_buffer, "LEVEL: %d", level);
 	glColor3f(0.000, 1.000, 0.000);
@@ -211,24 +213,10 @@ void startGame() {
 
 
 	//Chuong ngai vat
-	/*glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100 - 4);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100 - 6);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100 - 6);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100 - 4);
-	glEnd();
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100 - 2);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100 - 2);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100);
-	glEnd();*/
-	// Vat the la
 
-	//Than cua vat the la
-	glColor3f(1.000, 0.000, 0.500);
+	// Vat the la
+		//Than cua vat the la
+	glColor3f(1.00, 0.500, 0.500);// mau huong
 	glBegin(GL_POLYGON);
 	glVertex2f(lrIndex1 + 26, car1 + 92);
 	glVertex2f(lrIndex1 + 24, car1 + 94);
@@ -240,6 +228,16 @@ void startGame() {
 	glVertex2f(lrIndex1 + 32, car1 + 94);
 
 	glVertex2f(lrIndex1 + 30, car1 + 92);
+	glEnd();
+
+		// Duoi cua vat the la
+	glColor3f(0.600, 0.400, 0.500);
+	glBegin(GL_POLYGON);
+	glVertex2f(lrIndex1 + 24, car1 + 100);
+	glVertex2f(lrIndex1 + 24, car1 + 98);
+	glVertex2f(lrIndex1 + 28, car1 + 96);
+	glVertex2f(lrIndex1 + 32, car1 + 98);
+	glVertex2f(lrIndex1 + 32, car1 + 100);
 	glEnd();
 	car1--;
 	if (car1<-100) {
@@ -253,14 +251,8 @@ void startGame() {
 
 	}
 
-	//Opposite car 2
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100 - 4);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100 - 6);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 6);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 4);
-	glEnd();
+	//Vật thể lạ
+		// Than cua vat the 2
 	glColor3f(0.000, 0.000, 0.000);
 	glBegin(GL_POLYGON);
 	glVertex2f(lrIndex2 + 26 - 2, car2 + 100);
@@ -268,6 +260,8 @@ void startGame() {
 	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 2);
 	glVertex2f(lrIndex2 + 30 + 2, car2 + 100);
 	glEnd();
+
+	// Duoi cua vat the 2
 	glColor3f(0.294, 0.000, 0.510);
 	glBegin(GL_POLYGON);
 	glVertex2f(lrIndex2 + 26, car2 + 100);
@@ -276,6 +270,7 @@ void startGame() {
 	glVertex2f(lrIndex2 + 30, car2 + 100 - 7);
 	glVertex2f(lrIndex2 + 30, car2 + 100);
 	glEnd();
+
 	car2--;
 	if (car2<-100) {
 		car2 = 0;
@@ -336,7 +331,6 @@ void fristDesign() {
 	glVertex2f(100, 50 - 50);
 	glVertex2f(0, 50 - 50);
 	glEnd();
-
 
 
 	//Road Design In Front Page
@@ -474,10 +468,10 @@ void fristDesign() {
 	}
 
 	glColor3f(1.000, 1.000, 0.000);
-	renderBitmapString(30, 80, (void *)font1, "2D Car Racing Game ");
+	renderBitmapString(25, 80, (void *)font1, "The Galaxy Advanture 2020"); // vị trí tiêu đề xuất hiện trên màn hình
 
 	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START");
+	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START"); // 
 	renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
 
 	glColor3f(1.000, 1.000, 1.000);
@@ -509,8 +503,6 @@ void display() {
 	else {
 		fristDesign();
 		//glClearColor(0.184, 0.310, 0.310,1);
-
-
 
 	}
 
@@ -591,7 +583,7 @@ void processKeys(unsigned char key, int x, int y) {
 }
 
 void timer(int) {
-	glutPostRedisplay();
+	glutPostRedisplay(); // cập nhật lại màn hình
 	glutTimerFunc(1000 / FPS, timer, 0);
 }
 
@@ -599,13 +591,13 @@ void timer(int) {
 
 int main(int argc, char *argv[])
 {
-	glutInit(&argc, argv);
+	glutInit(&argc, argv); // 
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowSize(500, 650);
 	glutInitWindowPosition(200, 20);
-	glutCreateWindow("The Galaxy Adventure 2020");
+	glutCreateWindow("The Galaxy Adventure 2020"); // tiêu đề hiện thị lên windows
 
-	glutDisplayFunc(display);
+	glutDisplayFunc(display); // 
 	glutSpecialFunc(spe_key);
 	glutKeyboardFunc(processKeys);
 
