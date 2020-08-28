@@ -32,7 +32,7 @@ int car3 = +70;
 int lrIndex3 = 0;
 
 // Thiết lập kiểu size font chữ
-const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_24; // kiểu font chữ và size của font chữ
+const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_10; // kiểu font chữ và size của font chữ
 const int font2 = (int)GLUT_BITMAP_9_BY_15;
 const int font3 = (int)GLUT_BITMAP_8_BY_13;
 
@@ -49,10 +49,11 @@ void renderBitmapString(float x, float y, void *font, const char *string) {
 void startGame() {
 
 	//Sảnh của ngôi nhà ma
-	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_POLYGON);
+	glColor3f(1.0, 0.0, 0.0);
 	glVertex2f(20, 0);
-	glVertex2f(20, 100);
+	glVertex2f(30, 100);
+	glColor3f(0.0, 0.0, 0.0);
 	glVertex2f(80, 100);
 	glVertex2f(80, 0);
 	glEnd();
@@ -68,9 +69,9 @@ void startGame() {
 
 	//Print Score
 	char buffer[50];
-	sprintf_s(buffer, "POINT: %d", score);
-	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(80.5, 95, (void *)font3, buffer);
+	sprintf_s(buffer, "Ghost: %d", score);
+	glColor3f(1.0, 1.0, 1.0);
+	renderBitmapString(83, 93, (void *)font2, buffer);
 
 	//Increse Speed With level
 
@@ -91,7 +92,6 @@ void startGame() {
 	glVertex2f(lrIndex + 26, 1);
 	glVertex2f(lrIndex + 24, 4);
 
-	glColor3f(0.294, 0.000, 0.510);
 	glVertex2f(lrIndex + 24, 8);
 	glVertex2f(lrIndex + 28, 10);
 	
@@ -247,40 +247,35 @@ void fristDesign() {
 	glVertex2f(10, 0);
 	glEnd();
 
-	glColor3f(1.000, 1.000, 1.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(22, 1);
-	glVertex2f(26, 3);
-	glVertex2f(30, 3);
-	glVertex2f(34, 1);
-	glEnd();
+	
 
 	//Nhân vật khám phá nhà ma
-	glColor3f(1.0, 1.0, 1.0); // mau trang
+		//Canh cua flycam
+	glColor3f(1.000, 1.000, 1.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(26, 1);
-	glVertex2f(24, 4);
-
-	glColor3f(0.294, 0.000, 0.510);
-	glVertex2f(24, 8);
-	glVertex2f(28, 10);
-
-	glVertex2f(32, 8);
-	glVertex2f(32, 4);
-	glVertex2f(30, 1);
-
-	glVertex2f(28, 10);
-	glVertex2f(30, 8);
-	glVertex2f(30, 1);
+	glVertex2f(42, 11);
+	glVertex2f(46, 13);
+	glVertex2f(50, 13);
+	glVertex2f(54, 11);
 	glEnd();
 
-	////Road Midle
-	//glColor3f(1, 1, 1);
-	//glBegin(GL_TRIANGLES);
-	//glVertex2f(32 ok- 2 + 21, 55);
-	//glVertex2f(50 + 2, 50 - 50);
-	//glVertex2f(50 - 2, 50 - 50);
-	//glEnd();
+		// Thân của flycam
+	glColor3f(1.0, 1.0, 1.0); // mau trang
+	glBegin(GL_POLYGON);
+	glVertex2f(46, 11);
+	glVertex2f(44, 14);
+
+	glVertex2f(44, 18);
+	glVertex2f(48, 20);
+
+	glVertex2f(52, 18);
+	glVertex2f(52, 14);
+	glVertex2f(50, 11);
+
+	glVertex2f(48, 20);
+	glVertex2f(50, 18);
+	glVertex2f(50, 11);
+	glEnd();
 
 	//Bầu trời u ám
 	glColor3f(0.329, 0.329, 0.329); // DimGray color
@@ -298,6 +293,7 @@ void fristDesign() {
 	glBegin(GL_POLYGON);
 	glVertex2f(40, 90);
 	glVertex2f(40, 95);
+	glColor3f(0.0, 0.0, 0.0); // Dark Orchid color
 	glVertex2f(60, 95);
 	glVertex2f(60, 90);
 	glEnd();
@@ -307,58 +303,58 @@ void fristDesign() {
 	glBegin(GL_POLYGON);
 	glVertex2f(30, 80);
 	glVertex2f(30, 90);
+	glColor3f(1.0, 1.0, 1.0); // Dark Orchid color
 	glVertex2f(70, 90);
 	glVertex2f(70, 80);
 	glEnd();
 
-	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
+	
 	glBegin(GL_POLYGON);
+	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
 	glVertex2f(20, 70);
 	glVertex2f(20, 80);
+	glColor3f(0.0, 0.0, 0.0); // Dark Orchid color
 	glVertex2f(80, 80);
 	glVertex2f(80, 70);
 	glEnd();
-
-
 	
 	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
 	glBegin(GL_POLYGON);
 	glVertex2f(10, 55);
 	glVertex2f(10, 70);
+	glColor3f(0.0, 0.0, 0.0); // Dark Orchid color
 	glVertex2f(90, 70);
 	glVertex2f(90, 55);
 	glEnd();
 
 	// Cửa của ngôi nhà
-	glColor3f(1.0, 1.0, 1.0); // màu trắng
+	glColor3f(1.0, 0.0, 0.0); // red color
 	glBegin(GL_POLYGON);
 	glVertex2f(40, 65);
 	glVertex2f(60, 65);
+
+	glColor3f(0.0, 0.0, 0.0); // white color
 	glVertex2f(60, 55);
 	glVertex2f(40, 55);
 	glEnd();
 
-	glColor3f(1.0, 0.0, 0.0); // màu trắng
-	glBegin(GL_TRIANGLES);
-	glVertex2f(40, 65);
-	glVertex2f(60, 65);
-	glVertex2f(60, 55);
-	glVertex2f(40, 55);
-	glEnd();
 
 	//Mặt trăng máu
-		//glColor3f(0.80, 0.80, 0.80); // DimGray color
+	glColor3f(1.0,0.0,0.0); // red color
 	glBegin(GL_POLYGON);
 	glVertex2f(7, 85);
 	glVertex2f(7, 95);
+	glVertex2f(15, 97);
 
-	glVertex2f(20, 95);
-	glVertex2f(20, 85);
+	glColor3f(0.410, 0.410, 0.410); // grey color
+	glVertex2f(23,95);
+	glVertex2f(23, 85);
+	glVertex2f(15, 82);
 	glEnd();
 
 	// Biển báo cấm
-	// Cây cột
-	glColor3f(0.658824, 0.658824, 0.658824);
+		// Cây cột
+	glColor3f(0.658824, 0.658824, 0.658824); // dimgrey
 	glBegin(GL_POLYGON);
 	glVertex2f(10,25);
 	glVertex2f(10,45);
@@ -366,7 +362,7 @@ void fristDesign() {
 	glVertex2f(13, 25);
 	glEnd();
 
-	//Tấm bản
+		//Tấm bản
 	glColor3f(0.91, 0.76, 0.65); // màu nâu sáng
     glBegin(GL_POLYGON);
     glVertex2f(3, 32);
@@ -375,6 +371,22 @@ void fristDesign() {
 	glVertex2f(20, 32);
     glEnd();
 
+	// Bia mộ
+	glColor3f(0.80, 0.80, 0.80); // màu nâu sáng
+	glBegin(GL_POLYGON);
+	glVertex2f(72, 45);
+	glVertex2f(89, 45);
+	glVertex2f(85, 50);
+	glVertex2f(75, 50);
+	glEnd();
+
+	glColor3f(0.80, 0.80, 0.80); // màu nâu sáng
+	glBegin(GL_POLYGON);
+	glVertex2f(72, 35);
+	glVertex2f(89, 35);
+	glVertex2f(89, 45);
+	glVertex2f(72, 45);
+	glEnd();
 
 
 
@@ -426,9 +438,10 @@ void fristDesign() {
 
 	//}
 
-	//// vị trí tiêu đề xuất hiện trên màn hình
-	//glColor3f(1.000, 0.000, 0.500);
-	//renderBitmapString(24, 80, (void *)font1, "The Haunted House 2020"); 
+	// vị trí tiêu đề xuất hiện trên màn hình
+	glColor3f(0.0, 0.0, 0.0);
+	renderBitmapString(35, 85, (void *)font2, "THE HAUNTED HOUSE"); 
+	renderBitmapString(46.5, 81, (void *)font2, "2020");
 
 	//// vị trí thông báo hướng dẫn
 	//glColor3f(0.000, 1.000, 0.000);
@@ -445,6 +458,11 @@ void fristDesign() {
 	// vi tri xuat hien tren bien bao cam
 	glColor3f(0.0,0.0,0.0);
 	renderBitmapString(3.5, 37, (void *)font2, "Dangerous"); 
+
+	// điu khác trên bia mộ
+	glColor3f(0.0, 0.0, 0.0);
+	renderBitmapString(76, 45, (void *)font2, "R.I.P");
+	renderBitmapString(74, 39, (void *)font2, "A B C Z");
 }
 
 
