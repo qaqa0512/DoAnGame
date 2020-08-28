@@ -292,44 +292,8 @@ void fristDesign() {
 	glVertex2f(100, 55);
 	glEnd();
 
-	// Con dơi
-	glColor3f(0.329, 0.329, 0.329); // DimGray color
-	glBegin(GL_POLYGON);
-	glVertex2f(10, 65);
-
-	glVertex2f(0, 100);
-	//glColor3f(0.35, 0.16, 0.16); // Dark Brown Color
-	//glVertex2f(0, 55);
-	//glVertex2f(100, 55);
-	glEnd();
-
-	//Hill 1
-	/*glColor3f(0.235, 0.702, 0.443);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(20, 55 + 10);
-	glVertex2f(20 + 7, 55);
-	glVertex2f(0, 55);
-	glEnd();*/
-
-	////Hill 2
-	//glColor3f(0.000, 0.502, 0.000);
-	//glBegin(GL_POLYGON);
-
-	//glVertex2f(10, 55);
-	//glVertex2f(10, 70);
-	//glVertex2f(50, 70);
-	//glVertex2f(50, 55);
-	//glEnd();
-
-	//Hill 4
-	/*glColor3f(0.235, 0.702, 0.443);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(87, 55 + 10);
-	glVertex2f(100, 55);
-	glVertex2f(60, 55);
-	glEnd();*/
-
-	// Ngôi nhà ma ám
+		// Ngôi nhà ma ám
+	// Đỉnh của ngôi nhà
 	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
 	glBegin(GL_POLYGON);
 	glVertex2f(40, 90);
@@ -338,6 +302,7 @@ void fristDesign() {
 	glVertex2f(60, 90);
 	glEnd();
 
+	//Thân của Ngôi Nhà Ma Ám
 	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
 	glBegin(GL_POLYGON);
 	glVertex2f(30, 80);
@@ -355,7 +320,7 @@ void fristDesign() {
 	glEnd();
 
 
-	//Thân của Ngôi Nhà Ma Ám
+	
 	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
 	glBegin(GL_POLYGON);
 	glVertex2f(10, 55);
@@ -379,6 +344,16 @@ void fristDesign() {
 	glVertex2f(60, 65);
 	glVertex2f(60, 55);
 	glVertex2f(40, 55);
+	glEnd();
+
+	//Mặt trăng máu
+		//glColor3f(0.80, 0.80, 0.80); // DimGray color
+	glBegin(GL_POLYGON);
+	glVertex2f(7, 85);
+	glVertex2f(7, 95);
+
+	glVertex2f(20, 95);
+	glVertex2f(20, 85);
 	glEnd();
 
 	// Biển báo cấm
