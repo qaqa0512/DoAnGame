@@ -26,9 +26,9 @@ int lrIndex = 0;
 //Chuong ngai vat tien toi
 int car1 = 0;
 int lrIndex1 = 0;
-int car2 = +35;
+int car2 = +33;
 int lrIndex2 = 0;
-int car3 = +70;
+int car3 = +68;
 int lrIndex3 = 0;
 
 // Thiết lập kiểu size font chữ
@@ -50,22 +50,26 @@ void startGame() {
 
 	//Sảnh của ngôi nhà ma
 	glBegin(GL_POLYGON);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex2f(20, 0);
-	glVertex2f(30, 100);
-	glColor3f(0.0, 0.0, 0.0);
-	glVertex2f(80, 100);
-	glVertex2f(80, 0);
+	glColor3f(0.556, 0.137, 0.137);
+	glVertex2f(23, 0);
+	glVertex2f(23, 100);
+
+	glVertex2f(77, 100);
+	glVertex2f(77, 0);
 	glEnd();
 
-	//Score Board
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(80, 97);
-	glVertex2f(100, 97);
-	glVertex2f(100, 98 - 8);
-	glVertex2f(80, 98 - 8);
-	glEnd();
+
+	// Nến 
+
+
+	////Score Board
+	//glColor3f(0.000, 0.000, 0.000);
+	//glBegin(GL_POLYGON);
+	//glVertex2f(80, 97);
+	//glVertex2f(100, 97);
+	//glVertex2f(100, 98 - 8);
+	//glVertex2f(80, 98 - 8);
+	//glEnd();
 
 	//Print Score
 	char buffer[50];
@@ -73,17 +77,15 @@ void startGame() {
 	glColor3f(1.0, 1.0, 1.0);
 	renderBitmapString(83, 93, (void *)font2, buffer);
 
-	//Increse Speed With level
-
 	//Tau vu tru
 
 		//Canh cua tau
 	glColor3f(1.000, 1.000, 1.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex + 22, 1);
-	glVertex2f(lrIndex + 26, 3);
-	glVertex2f(lrIndex + 30, 3);
-	glVertex2f(lrIndex + 34, 1);
+	glVertex2f(lrIndex + 22, 4);
+	glVertex2f(lrIndex + 26, 6);
+	glVertex2f(lrIndex + 30, 6);
+	glVertex2f(lrIndex + 34, 4);
 	glEnd();
 
 		//Than cua tau
@@ -243,20 +245,20 @@ void fristDesign() {
 	glColor3f(0.410, 0.410, 0.410);
 	glBegin(GL_TRIANGLES);
 	glVertex2f(50, 55);
-	glVertex2f(90, 0);
-	glVertex2f(10, 0);
+	glVertex2f(85, 0);
+	glVertex2f(15, 0);
 	glEnd();
 
 	
 
-	//Nhân vật khám phá nhà ma
-		//Canh cua flycam
+	//Flycam khám phá nhà ma
+		//Cánh cua flycam
 	glColor3f(1.000, 1.000, 1.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(42, 11);
-	glVertex2f(46, 13);
-	glVertex2f(50, 13);
-	glVertex2f(54, 11);
+	glVertex2f(42, 11+3);
+	glVertex2f(46, 13+3);
+	glVertex2f(50, 13+3);
+	glVertex2f(54, 11+3);
 	glEnd();
 
 		// Thân của flycam
@@ -287,6 +289,35 @@ void fristDesign() {
 	glVertex2f(100, 55);
 	glEnd();
 
+
+	// Con dơi 2
+	glColor3f(0.0, 0.0, 0.0); // Dark Orchid color
+	glBegin(GL_POLYGON);
+	glVertex2f(80, 90);
+	glVertex2f(95, 90);
+
+	glVertex2f(95, 85);
+	glVertex2f(93, 87);
+
+	glVertex2f(86.5, 87);
+	glVertex2f(80, 85);
+
+	//glColor3f(0.0, 0.0, 0.0); // Dark Orchid color
+	//glBegin(GL_TRIANGLES);
+	//glVertex2f(80, 90);
+	//glVertex2f(90, 90);
+
+	//glVertex2f(85, 85);
+	/*glVertex2f(95, 90);
+
+	glVertex2f(80,90);*/
+
+
+	/*glVertex2f(83, 88);
+	glVertex2f(80, 86);
+	glVertex2f(77, 88);*/
+	glEnd();
+
 		// Ngôi nhà ma ám
 	// Đỉnh của ngôi nhà
 	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
@@ -308,7 +339,6 @@ void fristDesign() {
 	glVertex2f(70, 80);
 	glEnd();
 
-	
 	glBegin(GL_POLYGON);
 	glColor3f(0.52, 0.37, 0.26); // Dark Orchid color
 	glVertex2f(20, 70);
@@ -327,8 +357,8 @@ void fristDesign() {
 	glVertex2f(90, 55);
 	glEnd();
 
-	// Cửa của ngôi nhà
-	glColor3f(1.0, 0.0, 0.0); // red color
+		// Cửa của ngôi nhà
+	glColor3f(0.556, 0.137, 0.137); // red color
 	glBegin(GL_POLYGON);
 	glVertex2f(40, 65);
 	glVertex2f(60, 65);
@@ -339,7 +369,7 @@ void fristDesign() {
 	glEnd();
 
 
-	//Mặt trăng máu
+		//Mặt trăng máu
 	glColor3f(1.0,0.0,0.0); // red color
 	glBegin(GL_POLYGON);
 	glVertex2f(7, 85);
@@ -352,8 +382,19 @@ void fristDesign() {
 	glVertex2f(15, 82);
 	glEnd();
 
-	// Biển báo cấm
-		// Cây cột
+	// Bia mộ 2 
+	glColor3f(0.80, 0.80, 0.80);  // dimgrey
+	glBegin(GL_POLYGON);
+	glVertex2f(23, 43);
+	glVertex2f(38, 43);
+	glVertex2f(38, 50);
+	glVertex2f(36, 52);
+	glVertex2f(25, 52);
+	glVertex2f(23, 50);
+	glEnd();
+
+		// Biển báo cấm
+	// Cây cột
 	glColor3f(0.658824, 0.658824, 0.658824); // dimgrey
 	glBegin(GL_POLYGON);
 	glVertex2f(10,25);
@@ -362,7 +403,7 @@ void fristDesign() {
 	glVertex2f(13, 25);
 	glEnd();
 
-		//Tấm bản
+	//Tấm bản
 	glColor3f(0.91, 0.76, 0.65); // màu nâu sáng
     glBegin(GL_POLYGON);
     glVertex2f(3, 32);
@@ -371,7 +412,20 @@ void fristDesign() {
 	glVertex2f(20, 32);
     glEnd();
 
-	// Bia mộ
+
+	// Bụi cỏ hoang
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_POLYGON);
+	glVertex2f(5, 10);
+	glVertex2f(19, 10);
+	glVertex2f(19, 15);
+	glVertex2f(6, 12);
+	glVertex2f(16, 12);
+	glVertex2f(5, 15);
+	glEnd();
+
+
+	// Bia mộ 1
 	glColor3f(0.80, 0.80, 0.80); // màu nâu sáng
 	glBegin(GL_POLYGON);
 	glVertex2f(72, 45);
@@ -388,55 +442,28 @@ void fristDesign() {
 	glVertex2f(72, 45);
 	glEnd();
 
-
-
-	//Menu Place Holder
-	/*glColor3f(0.098, 0.098, 0.439);
+	// Bụi cỏ hoang
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
 	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 - 15 + 10);
-	glVertex2f(32 - 4, 50 - 15 + 10);
+	glVertex2f(81, 10);
+	glVertex2f(97, 10);
+	glVertex2f(97, 15);
+	glVertex2f(84, 12);
+	glVertex2f(94, 12);
+	glVertex2f(81, 15);
 	glEnd();
-
-	glColor3f(00, 0, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 4 + 10);
-	glVertex2f(32 - 4, 50 + 4 + 10);
-	glEnd();
-	glBegin(GL_POLYGON);
-	glVertex2f(32 + 45, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 - 15 + 10);
-	glVertex2f(32 + 45, 50 - 15 + 10);
-	glEnd();
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 - 14 + 10);
-	glVertex2f(32 + 46, 50 - 14 + 10);
-	glVertex2f(32 + 46, 50 - 15 + 10);
-	glVertex2f(32 - 4, 50 - 15 + 10);
-	glEnd();
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 + 5 + 10);
-	glVertex2f(32 - 5, 50 + 5 + 10);
-	glVertex2f(32 - 5, 50 - 15 + 10);
-	glVertex2f(32 - 4, 50 - 15 + 10);
-	glEnd();
-*/
 
 
 	////Text Information in Frist Page
-	//if (gv == 1) {
-	//	glColor3f(1.000, 0.000, 0.000);
-	//	renderBitmapString(40, 75, (void *)font2, "YOU LOSE :((");
-	//	glColor3f(1.000, 0.000, 0.000);
-	//	char buffer2[50];
-	//	sprintf_s(buffer2, "Your Score is : %d", score);
-	//	renderBitmapString(33, 60 - 4 + 10, (void *)font1, buffer2);
+	if (gv == 1) {
+		glColor3f(1.000, 0.000, 0.000);
+		renderBitmapString(40, 75, (void *)font2, "YOU DIED :((");
+		glColor3f(1.000, 0.000, 0.000);
+		char buffer2[50];
+		sprintf_s(buffer2, "Your Score is : %d", score);
+		renderBitmapString(33, 60 - 4 + 10, (void *)font1, buffer2);
 
-	//}
+	}
 
 	// vị trí tiêu đề xuất hiện trên màn hình
 	glColor3f(0.0, 0.0, 0.0);
@@ -444,10 +471,14 @@ void fristDesign() {
 	renderBitmapString(46.5, 81, (void *)font2, "2020");
 
 	//// vị trí thông báo hướng dẫn
-	//glColor3f(0.000, 1.000, 0.000);
-	//renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START"); 
-	//renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
+	glColor3f(1.000, 1.000, 0.000);
+	renderBitmapString(14.5, 74.5, (void *)font2, "DO U WANT TO EXPLORE THE HAUNTED HOUSE???");
 
+
+	/*glColor3f(0.000, 1.000, 0.000);
+	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START"); 
+	renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
+*/
 	//// vị trí hướng dẫn di chuyển
 	//glColor3f(1.000, 1.000, 1.000);
 	//renderBitmapString(30, 50 - 6 + 10, (void *)font3, "Press UP to increase Speed");
@@ -459,10 +490,14 @@ void fristDesign() {
 	glColor3f(0.0,0.0,0.0);
 	renderBitmapString(3.5, 37, (void *)font2, "Dangerous"); 
 
-	// điu khác trên bia mộ
+	// điêu khác tên trên bia mộ 1
 	glColor3f(0.0, 0.0, 0.0);
 	renderBitmapString(76, 45, (void *)font2, "R.I.P");
 	renderBitmapString(74, 39, (void *)font2, "A B C Z");
+
+	// điêu khác tên trên bia mộ 1
+	glColor3f(0.0, 0.0, 0.0);
+	renderBitmapString(26.5, 47, (void *)font2, "R.I.P");
 }
 
 
@@ -537,9 +572,9 @@ void processKeys(unsigned char key, int x, int y) {
 			lrIndex = 0;
 			car1 = 0;
 			lrIndex1 = 0;
-			car2 = +35;
+			car2 = 32;
 			lrIndex2 = 0;
-			car3 = +70;
+			car3 = 68;
 			lrIndex3 = 0;
 			score = 0;
 			level = 0;
@@ -567,7 +602,7 @@ int main(int argc, char *argv[])
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowSize(500, 650);
 	glutInitWindowPosition(200, 20);
-	glutCreateWindow("The Haunted House 2020"); // tiêu đề hiện thị lên windows
+	glutCreateWindow("The Haunted House 2020 - Quoc Anh - Cong Duy - Quang Dang"); // tiêu đề hiện thị lên windows
 
 	glutDisplayFunc(display); // 
 	glutSpecialFunc(spe_key);
