@@ -1,608 +1,713 @@
-﻿#include "Dependencies\glew\glew.h"
-#include "Dependencies\freeglut\freeglut.h"
-#include<windows.h>
-#include <stdlib.h>
+﻿#include "Dependencies\freeglut\glut.h"
 #include <stdio.h>
-#include <iostream>
-#include <string>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <stdarg.h>
+#include<time.h>
+#include <sys/timeb.h>
+#include <sys/utime.h>
 
-//Game Speed
-int FPS = 50;
 
-//Game Track
-int start = 0;
-int gv = 0;
-int level = 0;
+#define WINDOW_WIDTH  1200
+#define WINDOW_HEIGHT 900
 
-//Track Score
-int score = 0;
+#define TIMER_PERIOD  50 // thởi gian cho bộ đếm thời gian
+#define TIMER_ON         1 //0: tắt hẹn giờ, 1: bật hẹn giờ
 
-//Form move track
-int roadDivTopMost = 0;
-int roadDivTop = 0;
-int roadDivMdl = 0;
-int roadDivBtm = 0;
+#define D2R 0.0174532
 
-//For Card Left / RIGHT
-int lrIndex = 0;
 
-//Car Coming
-int car1 = 0;
-int lrIndex1 = 0;
-int car2 = +35;
-int lrIndex2 = 0;
-int car3 = +70;
-int lrIndex3 = 0;
+typedef struct {
+	int x; //giá trị x của các đối tượng chuyển động
+	int y; //giá trị y của các đối tượng chuyển động
+	bool initialized; //nó được sử dụng để cung cấp cho các vật thể chuyển động ngẫu nhiên khi chúng chạm đích hoặc trúng tên lửa
 
-//For Display TEXT
-const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_24;
-const int font2 = (int)GLUT_BITMAP_HELVETICA_18;
-const int font3 = (int)GLUT_BITMAP_8_BY_13;
+	bool countChecker = false; //để đếm tổng ufos
+}ufo_t;
 
-char s[30];
-void renderBitmapString(float x, float y, void *font, const char *string) {
-	const char *c;
+int carx = 0, v = 0;
+int rev = 1;
+
+
+int rocketx = carx; //giá trị x của đối tượng được bắn
+int rockety = 0;//giá trị y của đối tượng được bắn
+bool shooted = false;//để kiểm tra xem đối tượng
+					 //có bị bắn hay không để di chuyển nó vì khi không bị bắn nó đi cùng chiều với ô tô nhưng khi bị bắn nó có giá trị x và y riêng
+bool rocketFire = false; //lửa xuất hiện và biến mất
+
+
+bool gameStart = false; //bắt đầu game với <F1>
+ufo_t ufo[5];
+
+
+int score = 0; // điểm đạt được bằng cách bắn ufos
+int totalUfos = 0; // số lượng ufos hiển thị
+int burstUfos = 0; // số lượng ufo bị bắn
+int lastPoint = 0;//điểm cuối cùng đạt được bằng cách bắn ufos
+
+int timer = 2000;//thời gian hẹn giờ để bắn tàu vũ trụ
+bool gameStop = false;
+/*Biến toàn cục */
+bool up = false, down = false, right = false, left = false;
+int  winWidth, winHeight; // chiều rộng và chiều cao cửa sổ hiện tại
+
+						  //
+						  // để vẽ đường tròn, tâm tại (x, y)
+						  // bán kính r
+						  //
+void circle(int x, int y, int r)
+{
+#define PI 3.1415
+	float angle;
+	glBegin(GL_POLYGON);
+	for (int i = 0; i < 100; i++)
+	{
+		angle = 2 * PI*i / 100;
+		glVertex2f(x + r*cos(angle), y + r*sin(angle));
+	}
+	glEnd();
+}
+void circle_wire(int x, int y, int r)
+{
+#define PI 3.1415
+	float angle;
+
+	glBegin(GL_LINE_LOOP);
+	for (int i = 0; i < 100; i++)
+	{
+		angle = 2 * PI*i / 100;
+		glVertex2f(x + r*cos(angle), y + r*sin(angle));
+	}
+	glEnd();
+}
+
+void print(int x, int y, char *string, void *font)
+{
+	int len, i;
+
 	glRasterPos2f(x, y);
-	for (c = string; *c != '\0'; c++) {
-		glutBitmapCharacter(font, *c);
+	len = (int)strlen(string);
+	for (i = 0; i<len; i++)
+	{
+		glutBitmapCharacter(font, string[i]);
+	}
+}
+// hiển thị văn bản với các biến.
+void vprint(int x, int y, void *font, char *string, ...)
+{
+	va_list ap;
+	va_start(ap, string);
+	char str[1024];
+	vsprintf_s(str, string, ap);
+	va_end(ap);
+
+	int len, i;
+	glRasterPos2f(x, y);
+	len = (int)strlen(str);
+	for (i = 0; i<len; i++)
+	{
+		glutBitmapCharacter(font, str[i]);
 	}
 }
 
-void tree(int x, int y) {
-	int newx = x;
-	int newy = y;
-	//Tree Left
-	//Bottom
-	glColor3f(0.871, 0.722, 0.529);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(newx + 11, newy + 55);
-	glVertex2f(newx + 12, newy + 55 - 10);
-	glVertex2f(newx + 10, newy + 55 - 10);
+// vprint2(-50, 0, 0.35, "00:%02d", timeCounter);
+void vprint2(int x, int y, float size, char *string, ...) {
+	va_list ap;
+	va_start(ap, string);
+	char str[1024];
+	vsprintf_s(str, string, ap);
+	va_end(ap);
+	glPushMatrix();
+	glTranslatef(x, y, 0);
+	glScalef(size, size, 1);
+
+	int len, i;
+	len = (int)strlen(str);
+	for (i = 0; i<len; i++)
+	{
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, str[i]);
+	}
+	glPopMatrix();
+}
+
+//
+//Để hiển thị trên cửa sổ bằng các lệnh OpenGL
+
+//
+//Vẽ UFO 
+
+void drawUfo(int x, int y) {
+
+	glColor3ub(72, 61, 139);
+	circle(x, y - 10, 25);
+
+
+	glBegin(GL_QUADS);
+	glColor3ub(220, 220, 220);
+	glVertex2f(-25 + x, y);
+	glVertex2f(-75 + x, -35 + y);
+	glColor3ub(105, 105, 105);
+	glVertex2f(+75 + x, -35 + y);
+	glVertex2f(+25 + x, y);
 	glEnd();
-	//Up
-	glColor3f(0.133, 0.545, 0.133);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(newx + 11, newy + 55 + 3);
-	glVertex2f(newx + 12 + 3, newy + 55 - 3);
-	glVertex2f(newx + 10 - 3, newy + 55 - 3);
+
+	glColor3f(0, 0, 0);
+	circle(-35 + x, -17.5 + y, 7);
+	glColor3f(1, 0, 0);
+
+	circle(-35 + x, -17.5 + y, 5);
+
+	glColor3f(0, 0, 0);
+	circle(-0 + x, -17.5 + y, 7);
+	glColor3f(0, 1, 0);
+
+	circle(-0 + x, -17.5 + y, 5);
+
+	glColor3f(0, 0, 0);
+	circle(+35 + x, -17.5 + y, 7);
+	glColor3f(0, 0, 1);
+
+	circle(+35 + x, -17.5 + y, 5);
+
+
+
+}
+
+
+
+void fire(int x) {
+	glColor3ub(255, 69, 0);
+	circle(x, -245 + rockety, 10);
+	glColor4f(1, 1, 0, 0.5);
+	circle(x, -245 + rockety, 15);
+}
+void displayRocket(int x) {
+	glColor3f(1, 0, 0);
+	circle(x, -190 + rockety, 15); // phần đầu
+
+
+	if (rocketFire)
+		fire(x);
+
+	glColor3ub(47, 79, 79);
+	glRectf(-15 + x, -190 + rockety, +15 + x, -240 + rockety); // phần thân tên lửa
+
+
+
+	glColor3f(1, 0, 0);
+	glBegin(GL_QUADS);//cách
+					  //tría 
+	glVertex2f(-15 + x, -215 + rockety);
+	glVertex2f(-25 + x, -221 + rockety);
+	glVertex2f(-25 + x, -230 + rockety);
+	glVertex2f(-15 + x, -230 + rockety);
+	//phải
+	glVertex2f(+15 + x, -215 + rockety);
+	glVertex2f(+25 + x, -221 + rockety);
+	glVertex2f(+25 + x, -230 + rockety);
+	glVertex2f(+15 + x, -230 + rockety);
+	glEnd();
+
+	glColor3ub(112, 128, 144);
+	glBegin(GL_QUADS);
+	glVertex2f(-15 + x, -240 + rockety);
+	glVertex2f(-10 + x, -245 + rockety);
+	glVertex2f(+10 + x, -245 + rockety);
+	glVertex2f(+15 + x, -240 + rockety);
 	glEnd();
 }
 
 
-void startGame() {
-	//Road
-	glColor3f(0.412, 0.412, 0.412);
-	glBegin(GL_POLYGON);
-	glVertex2f(20, 0);
-	glVertex2f(20, 100);
-	glVertex2f(80, 100);
-	glVertex2f(80, 0);
+void displayCar() {
+	glColor3ub(0, 0, 0); //lốp xe
+	circle(-35 * rev + carx, -255, 20);
+	circle(+35 * rev + carx, -255, 20);
+
+	glColor3ub(248, 248, 255); //vật thể bên trong
+	circle(-35 * rev + carx, -255, 10);
+	circle(+35 * rev + carx, -255, 10);
+
+
+	glColor3ub(27, 77, 62);
+	glRectf(-70 * rev + carx, -220, +70 * rev + carx, -260); // thân hình
+	glRectf(+60 * rev + carx, -225, +40 * rev + carx, -200); // cơ sở cửa sổ phía trước
+	glColor3ub(138, 43, 226);
+	glRectf(+56 * rev + carx, -220, +45 * rev + carx, -202); // cửa sỏ xe
+
+	glColor3f(1, 1, 0);
+	glRectf(+60 * rev + carx, -225 + v, +70 * rev + carx, -230 + v); // đèn trước
+
+	glColor3f(1, 0, 0);
+	glRectf(-60 * rev + carx, -225, -70 * rev + carx, -230); // đèn sau
+
+	glColor3f(0, 0, 0);
+	glRectf(-40 * rev + carx, -190, +40 * rev + carx, -240);
+
+	glRectf(-20 * rev + carx, -170, +20 * rev + carx, -240);
+
+
+
+
+
+}
+
+//vẽ các đám mây
+void displayCloud(int x, int y) {
+	glColor3ub(240, 248, 255);
+	circle(21 + x, -24 + y, 15);
+	circle(25 + x, -7 + y, 25);
+	circle(-25 + x, +5 + y, 25);
+	circle(0 + x, 0 + y, 35);
+}
+
+//vẽ background 
+void displayBackground() {
+
+	//bầu trời
+	glBegin(GL_QUADS);
+	glColor3ub(0, 191, 255);
+	glVertex2f(-600, 450);
+	glVertex2f(600, 450);
+	glColor3ub(240, 248, 255);
+	glVertex2f(600, -450);
+	glVertex2f(-600, -450);
 	glEnd();
 
-	//Road Left Border
-	glColor3f(1.000, 1.000, 1.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(20, 0);
-	glVertex2f(20, 100);
-	glVertex2f(23, 100);
-	glVertex2f(23, 0);
+	//đất
+	glBegin(GL_QUADS);
+	glColor3ub(255, 222, 173);
+	glVertex2f(-600, -210);
+	glVertex2f(600, -210);
+	glColor3ub(139, 69, 19);
+	glVertex2f(600, -450);
+	glVertex2f(-600, -450);
 	glEnd();
 
-	//Road Right Border
-	glColor3f(1.000, 1.000, 1.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(77, 0);
-	glVertex2f(77, 100);
-	glVertex2f(80, 100);
-	glVertex2f(80, 0);
-	glEnd();
 
-	////Road Middel Border
-	////TOP
-	//glColor3f(1.000, 1.000, 0.000);
-	//glBegin(GL_POLYGON);
-	//glVertex2f(48, roadDivTop + 80);
-	//glVertex2f(48, roadDivTop + 100);
-	//glVertex2f(52, roadDivTop + 100);
-	//glVertex2f(52, roadDivTop + 80);
-	//glEnd();
-	//roadDivTop--;
-	//if (roadDivTop<-100) {
-	//	roadDivTop = 20;
-	//	score++;
-	//}
-	////Midle
-	//glColor3f(1.000, 1.000, 0.000);
-	//glBegin(GL_POLYGON);
-	//glVertex2f(48, roadDivMdl + 40);
-	//glVertex2f(48, roadDivMdl + 60);
-	//glVertex2f(52, roadDivMdl + 60);
-	//glVertex2f(52, roadDivMdl + 40);
-	//glEnd();
+	displayCloud(450, 340);
+	displayCloud(250, 300);
+	displayCloud(0, 340);
 
 
+	displayCloud(-250, 300);
+	displayCloud(-450, 340);
 
-	//roadDivMdl--;
-	//if (roadDivMdl<-60) {
-	//	roadDivMdl = 60;
-	//	score++;
-	//}
-	//Bottom
-	/*glColor3f(1.000, 1.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(48, roadDivBtm + 0);
-	glVertex2f(48, roadDivBtm + 20);
-	glVertex2f(52, roadDivBtm + 20);
-	glVertex2f(52, roadDivBtm + 0);
-	glEnd();
-	roadDivBtm--;
-	if (roadDivBtm<-20) {
-		roadDivBtm = 100;
-		score++;
-	}*/
+}
 
 
-	//Score Board
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(80, 97);
-	glVertex2f(100, 97);
-	glVertex2f(100, 98 - 8);
-	glVertex2f(80, 98 - 8);
-	glEnd();
+void menu() {
+	glColor3f(0, 0, 0);
+	glRectf(500, 600, 600, -600);
 
-	//Print Score
-	char buffer[50];
-	sprintf_s(buffer, "SCORE: %d", score);
-	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(80.5, 95, (void *)font3, buffer);
-	//Speed Print
-	char buffer1[50];
-	sprintf_s(buffer1, "SPEED:%dKm/h", FPS);
-	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(80.5, 95 - 2, (void *)font3, buffer1);
-	//level Print
-	if (score % 50 == 0) {
-		int last = score / 50;
-		if (last != level) {
-			level = score / 50;
-			FPS = FPS + 2;
+	glLineWidth(2);
+	glColor3f(1, 1, 0);
+
+
+	//bộ đếm thời gian tính giờ bắn
+	if (timer > 0)
+	{
+		if (timer < 500)
+		{
+			glColor3f(1, 0, 0);//hiện chữ màu đỏ cho thời dưới 10 s
+			if (timer % 5 != 0) {
+				vprint(530, 350, GLUT_BITMAP_9_BY_15, "%02d", timer / 100/*, timer % 100*/);
+
+			}
+
+
+		}
+
+		else
+		{
+			glColor3f(0, 1, 0);//hiện chữ màu xanh cho thời gian trên 10s
+			vprint(530, 350, GLUT_BITMAP_9_BY_15, "%02d:%02d", timer / 100, timer % 100);
 
 		}
 	}
-	char level_buffer[50];
-	sprintf_s(level_buffer, "LEVEL: %d", level);
-	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(80.5, 95 - 4, (void *)font3, level_buffer);
-
-	//Increse Speed With level
-
-	//Nhan Vat Chinh
-	//Back Tire
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex + 26 - 2, 1);
-	glVertex2f(lrIndex + 26 - 2, 3);
-	glVertex2f(lrIndex + 30 + 2, 3);
-	glVertex2f(lrIndex + 30 + 2, 1);
-	glEnd();
-
-	//Car Body
-	glColor3f(0.678, 1.000, 0.184);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex + 26, 1);
-	glVertex2f(lrIndex + 24, 4);
-
-	glVertex2f(lrIndex + 24, 8);
-	glVertex2f(lrIndex + 28, 10);
-
-	glVertex2f(lrIndex + 32, 8);
-	glVertex2f(lrIndex + 32, 4);
-	glVertex2f(lrIndex + 30, 1);
-
-	glColor3f(0.000, 0.545, 0.545);
-	glVertex2f(lrIndex + 48, 10);
-	glVertex2f(lrIndex + 50, 8);
-	glVertex2f(lrIndex + 50, 1);
-	glEnd();
-
-
-	//Opposite car 1
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100 - 4);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100 - 6);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100 - 6);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100 - 4);
-	glEnd();
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100);
-	glVertex2f(lrIndex1 + 26 - 2, car1 + 100 - 2);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100 - 2);
-	glVertex2f(lrIndex1 + 30 + 2, car1 + 100);
-	glEnd();
-	glColor3f(1.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 26, car1 + 100);
-	glVertex2f(lrIndex1 + 26, car1 + 100 - 7);
-	glVertex2f(lrIndex1 + 28, car1 + 100 - 9);
-	glVertex2f(lrIndex1 + 30, car1 + 100 - 7);
-	glVertex2f(lrIndex1 + 30, car1 + 100);
-	glEnd();
-	car1--;
-	if (car1<-100) {
-		car1 = 0;
-		lrIndex1 = lrIndex;
-	}
-	//KIll check car1
-	if ((abs(lrIndex - lrIndex1)<8) && (car1 + 100<10)) {
-		start = 0;
-		gv = 1;
+	else
+	{
+		glColor3f(1, 0, 0);
+		vprint(530, 350, GLUT_BITMAP_9_BY_15, "00:00"); //bộ đếm thời gian
+		vprint(2500, 200, GLUT_BITMAP_9_BY_15, "START"); //bộ đếm thời gian
+		if (score >= 50 && timer / 100 == 0) {
+			glColor3f(1, 0, 0);
+			vprint(0, 100, GLUT_BITMAP_HELVETICA_18, "YOU WIN");
+		}
+		else if (score <50 && timer / 100 == 0) {
+			glColor3f(1, 0, 0);
+			vprint(-80, 100, GLUT_BITMAP_HELVETICA_18, "YOU LOSE");
+		}
 
 	}
+	glColor3f(1, 1, 0);
 
-	//Opposite car 2
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100 - 4);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100 - 6);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 6);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 4);
-	glEnd();
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100);
-	glVertex2f(lrIndex2 + 26 - 2, car2 + 100 - 2);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100 - 2);
-	glVertex2f(lrIndex2 + 30 + 2, car2 + 100);
-	glEnd();
-	glColor3f(0.294, 0.000, 0.510);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26, car2 + 100);
-	glVertex2f(lrIndex2 + 26, car2 + 100 - 7);
-	glVertex2f(lrIndex2 + 28, car2 + 100 - 9);
-	glVertex2f(lrIndex2 + 30, car2 + 100 - 7);
-	glVertex2f(lrIndex2 + 30, car2 + 100);
-	glEnd();
-	car2--;
-	if (car2<-100) {
-		car2 = 0;
-		lrIndex2 = lrIndex;
-	}
-	//KIll check car2
-	if ((abs(lrIndex - lrIndex2)<8) && (car2 + 100<10)) {
-		start = 0;
-		gv = 1;
-	}
+	vprint(510, 200, GLUT_BITMAP_HELVETICA_18, "Total Ufos");//tổng số ufo đi qua
+
+	vprint(540, 175, GLUT_BITMAP_9_BY_15, "%02d", totalUfos);
 
 
-	//Opposite car 3
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100 - 4);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100 - 6);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100 - 6);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100 - 4);
-	glEnd();
-	glColor3f(0.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100);
-	glVertex2f(lrIndex3 + 26 - 2, car3 + 100 - 2);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100 - 2);
-	glVertex2f(lrIndex3 + 30 + 2, car3 + 100);
-	glEnd();
-	glColor3f(1.000, 0.271, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 26, car3 + 100);
-	glVertex2f(lrIndex3 + 26, car3 + 100 - 7);
-	glVertex2f(lrIndex3 + 28, car3 + 100 - 9);
-	glVertex2f(lrIndex3 + 30, car3 + 100 - 7);
-	glVertex2f(lrIndex3 + 30, car3 + 100);
-	glEnd();
-	car3--;
-	if (car3<-100) {
-		car3 = 0;
-		lrIndex3 = lrIndex;
-	}
-	//KIll check car3
-	if ((abs(lrIndex - lrIndex3)<8) && (car3 + 100<10)) {
-		start = 0;
-		gv = 1;
+	vprint(510, 0, GLUT_BITMAP_HELVETICA_18, "Burst Ufos");//tổng số ufo bị bắn
 
-	}
+	vprint(540, -25, GLUT_BITMAP_9_BY_15, "%02d", burstUfos);
 
+	vprint(510, -100, GLUT_BITMAP_HELVETICA_18, "Last Points");//số ufo mà tên lửa đi qua trong lần đó
+
+	vprint(540, -125, GLUT_BITMAP_9_BY_15, "%d", lastPoint);
+
+
+	vprint(520, -250, GLUT_BITMAP_HELVETICA_18, "Diem");//số điếm tích lũy được
+	vprint(525, -275, GLUT_BITMAP_9_BY_15, "%03d", score);
+
+
+	if (!gameStart || gameStop)
+		vprint(-550, -280, GLUT_BITMAP_HELVETICA_18, "Press <F1> to (re)start game");
+	else
+		vprint(-550, -280, GLUT_BITMAP_HELVETICA_18, "Press <F1> to stop game");
 }
-
-void fristDesign() {
-
-	//Road Backgound
-	glColor3f(0.000, 0.392, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(0, 55);
-	glVertex2f(100, 55);
-	glColor3f(0.604, 0.804, 0.196);
-	glVertex2f(100, 50 - 50);
-	glVertex2f(0, 50 - 50);
-	glEnd();
-
-
-
-	//Road Design In Front Page
-	glColor3f(00, 0, 0);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(32 - 2 + 21, 55);
-	glVertex2f(32 + 58, 50 - 50);
-	glVertex2f(32 - 22, 50 - 50);
-	glEnd();
-	//Road Midle
-	glColor3f(1, 1, 1);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(32 - 2 + 21, 55);
-	glVertex2f(50 + 2, 50 - 50);
-	glVertex2f(50 - 2, 50 - 50);
-	glEnd();
-
-	//Road Sky
-	glColor3f(0.000, 0.749, 1.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(100, 100);
-	glVertex2f(0, 100);
-	glColor3f(0.686, 0.933, 0.933);
-	glVertex2f(0, 55);
-	glVertex2f(100, 55);
-	glEnd();
-
-	//Hill 1
-	glColor3f(0.235, 0.702, 0.443);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(20, 55 + 10);
-	glVertex2f(20 + 7, 55);
-	glVertex2f(0, 55);
-	glEnd();
-
-	//Hill 2
-	glColor3f(0.000, 0.502, 0.000);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(20 + 15, 55 + 12);
-	glVertex2f(20 + 20 + 10, 55);
-	glVertex2f(0 + 10, 55);
-	glEnd();
-
-	//Hill 4
-	glColor3f(0.235, 0.702, 0.443);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(87, 55 + 10);
-	glVertex2f(100, 55);
-	glVertex2f(60, 55);
-	glEnd();
-
-	//Hill 3
-	glColor3f(0.000, 0.502, 0.000);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(70, 70);
-	glVertex2f(90, 55);
-	glVertex2f(50, 55);
-	glEnd();
-
-
-	//Tree Left
-	//Bottom
-	glColor3f(0.871, 0.722, 0.529);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(11, 55);
-	glVertex2f(12, 55 - 10);
-	glVertex2f(10, 55 - 10);
-	glEnd();
-	//Up
-	glColor3f(0.133, 0.545, 0.133);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(11, 55 + 3);
-	glVertex2f(12 + 3, 55 - 3);
-	glVertex2f(10 - 3, 55 - 3);
-	glEnd();
-
-
-
-
-	tree(5, -15);
-	tree(9, 5);
-	tree(85, 9);
-	tree(75, -5);
-
-
-
-
-
-	//Menu Place Holder
-	glColor3f(0.098, 0.098, 0.439);
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 - 15 + 10);
-	glVertex2f(32 - 4, 50 - 15 + 10);
-	glEnd();
-
-	glColor3f(00, 0, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 4 + 10);
-	glVertex2f(32 - 4, 50 + 4 + 10);
-	glEnd();
-	glBegin(GL_POLYGON);
-	glVertex2f(32 + 45, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 + 5 + 10);
-	glVertex2f(32 + 46, 50 - 15 + 10);
-	glVertex2f(32 + 45, 50 - 15 + 10);
-	glEnd();
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 - 14 + 10);
-	glVertex2f(32 + 46, 50 - 14 + 10);
-	glVertex2f(32 + 46, 50 - 15 + 10);
-	glVertex2f(32 - 4, 50 - 15 + 10);
-	glEnd();
-	glBegin(GL_POLYGON);
-	glVertex2f(32 - 4, 50 + 5 + 10);
-	glVertex2f(32 - 5, 50 + 5 + 10);
-	glVertex2f(32 - 5, 50 - 15 + 10);
-	glVertex2f(32 - 4, 50 - 15 + 10);
-	glEnd();
-
-
-
-	//Text Information in Frist Page
-	if (gv == 1) {
-		glColor3f(1.000, 0.000, 0.000);
-		renderBitmapString(35, 60 + 10, (void *)font1, "GAME OVER");
-		glColor3f(1.000, 0.000, 0.000);
-		char buffer2[50];
-		sprintf_s(buffer2, "Your Score is : %d", score);
-		renderBitmapString(33, 60 - 4 + 10, (void *)font1, buffer2);
-
-	}
-
-	glColor3f(1.000, 1.000, 0.000);
-	renderBitmapString(30, 80, (void *)font1, "2D Car Racing Game ");
-
-	glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START");
-	renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
-
-	glColor3f(1.000, 1.000, 1.000);
-	renderBitmapString(30, 50 - 6 + 10, (void *)font3, "Press UP to increase Speed");
-	renderBitmapString(30, 50 - 8 + 10, (void *)font3, "Press DWON to decrease Speed");
-	renderBitmapString(30, 50 - 10 + 10, (void *)font3, "Press RIGHT to turn Right");
-	renderBitmapString(30, 50 - 12 + 10, (void *)font3, "Press LEFT to turn Left");
-
-
-	glColor3f(0.000, 1.000, 1.000);
-	renderBitmapString(30 - 5, 50 - 40, (void *)font3, "Project By:");
-	renderBitmapString(30 - 5, 50 - 43, (void *)font3, "Zunaid Mahdi");
-
-
-}
-
-
 
 void display() {
-	glClear(GL_COLOR_BUFFER_BIT);
 
-	if (start == 1) {
-		// glClearColor(0.627, 0.322, 0.176,1);
+	displayBackground();
+	menu();
 
-		glClearColor(0.000, 0.392, 0.000, 1);
-		startGame();
+	if (!shooted)
+		rocketx = carx;
+	displayRocket(rocketx);
+
+
+	//khoảng cách bay rocket
+	if (rockety > 630) {
+		shooted = false;
+		rockety = 0;
+		rocketFire = false;
 	}
 
-	else {
-		fristDesign();
-		//glClearColor(0.184, 0.310, 0.310,1);
+	displayCar();
 
 
+	for (int i = 0; i < 5; i++)
+		drawUfo(ufo[i].x, ufo[i].y);
 
-	}
 
-
-
-	glFlush();
 	glutSwapBuffers();
-}
-
-
-
-void spe_key(int key, int x, int y) {
-	switch (key) {
-	case GLUT_KEY_DOWN:
-		if (FPS>(50 + (level * 2)))
-			FPS = FPS - 2;
-		break;
-	case GLUT_KEY_UP:
-		FPS = FPS + 2;
-		break;
-
-	case GLUT_KEY_LEFT:
-		if (lrIndex >= 0) {
-			lrIndex = lrIndex - (FPS / 10);
-			if (lrIndex<0) {
-				lrIndex = -1;
-			}
-		}
-		break;
-
-
-	case GLUT_KEY_RIGHT:
-		if (lrIndex <= 44) {
-			lrIndex = lrIndex + (FPS / 10);
-			if (lrIndex>44) {
-				lrIndex = 45;
-			}
-		}
-		break;
-
-	default:
-		break;
-	}
 
 }
 
-void processKeys(unsigned char key, int x, int y) {
-
-	switch (key)
-	{
-	case ' ':
-		if (start == 0) {
-			start = 1;
-			gv = 0;
-			FPS = 50;
-			roadDivTopMost = 0;
-			roadDivTop = 0;
-			roadDivMdl = 0;
-			roadDivBtm = 0;
-			lrIndex = 0;
-			car1 = 0;
-			lrIndex1 = 0;
-			car2 = +35;
-			lrIndex2 = 0;
-			car3 = +70;
-			lrIndex3 = 0;
-			score = 0;
-			level = 0;
-		}
-		break;
-
-	case 27:
-		exit(0);
-		break;
-	default:
-		break;
-	}
-}
-
-void timer(int) {
-	glutPostRedisplay();
-	glutTimerFunc(1000 / FPS, timer, 0);
-}
-
-
-
-int main(int argc, char *argv[])
+void onKeyDown(unsigned char key, int x, int y)
 {
+	// exit when ESC is pressed.
+	if (key == 27)
+		exit(0);
+
+	//để làm mới cửa sổ nó gọi hàm display ()
+
+	glutPostRedisplay();
+}
+
+void onKeyUp(unsigned char key, int x, int y)
+{
+	// thoát trò chơi.
+	if (key == ' ' && gameStart)
+		shooted = true;
+	if (key == 's' || key == 'S')
+		gameStart = !gameStart;
+
+	//để làm mới cửa sổ nó gọi hàm display ()
+	glutPostRedisplay();
+}
+
+int getMilliCount() {
+	timeb tb;
+	ftime(&tb);
+	int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
+	return nCount;
+}
+void sleep(int sleeptime)
+{
+	int count = 0;
+	int beginsleep = getMilliCount();
+	while (getMilliCount() - beginsleep < sleeptime)
+	{
+		count++;
+	}
+}
+
+void onSpecialKeyDown(int key, int x, int y)
+{
+	// Write your codes here.
+	switch (key) {
+	case GLUT_KEY_UP: up = true; break;
+	case GLUT_KEY_DOWN: down = true; break;
+	case GLUT_KEY_LEFT: left = true; break;
+	case GLUT_KEY_RIGHT: right = true; break;
+	}
+
+	if (key == GLUT_KEY_F1 && gameStop) {
+		gameStop = false;
+		for (int i = 0; i < 5; i++) {
+			ufo[i].x = -675 - i * 300;
+			ufo[i].initialized = false;
+		}
+		timer = 2000;
+		totalUfos = 0;//tổng số ufo được chuong trình ra
+		burstUfos = 0;//tổng số ufo bị bắn 
+		score = 0;//điểm bắn hạ ufo 
+		lastPoint = 0;//số ufo bị bắn trong 1 lần bắn
+		rocketx = carx;//tốc độ rocket đi theo tọa độ của xe
+		rockety = 0;
+		shooted = false;
+		gameStart = false;
+	}
+
+
+	if (key == GLUT_KEY_F1) {
+		gameStart = !gameStart;
+	}
+
+	if (key == GLUT_KEY_RIGHT && carx < 430 && gameStart && !gameStop)
+	{
+		carx += 20;
+		rev = 1; //chiều ngang của xe
+	}
+	if (key == GLUT_KEY_LEFT && carx > -530 && gameStart && !gameStop)
+	{
+		carx -= 20;//chiều dọc của xe
+		rev = -1;
+	}
+	if (key == GLUT_KEY_UP && y <15 && gameStart && !gameStop)
+	{
+		v += 20;
+
+	}
+	if (key == GLUT_KEY_DOWN && y > 30 && gameStart && !gameStop)
+	{
+		v -= 20;
+	}
+	glutPostRedisplay();
+	// to refresh the window it calls display() function
+
+}
+
+//
+//Các phìm đặc biệt GLUT_KEY_F1, F2, F3,...
+// phím mũi tên, GLUT_KEY_UP, GLUT_KEY_DOWN, GLUT_KEY_RIGHT, GLUT_KEY_RIGHT
+//
+void onSpecialKeyUp(int key, int x, int y)
+{
+
+	switch (key) {
+	case GLUT_KEY_UP: up = false; break;
+	case GLUT_KEY_DOWN: down = false; break;
+	case GLUT_KEY_LEFT: left = false; break;
+	case GLUT_KEY_RIGHT: right = false; break;
+	}
+
+	// to refresh the window it calls display() function
+	glutPostRedisplay();
+}
+
+//
+// sự kiện khi nhấp chuột
+// Cung cấp nút
+// buttons : GLUT_LEFT_BUTTON , GLUT_RIGHT_BUTTON
+// states  : GLUT_UP , GLUT_DOWN
+// x, y là tọa độ điểm đã nhấp chuột
+//
+void onClick(int button, int stat, int x, int y)
+{
+
+
+
+	// to refresh the window it calls display() function
+	glutPostRedisplay();
+}
+
+//
+// hàm được gọi khi kích thước của cửa sổ thay đổi
+// w :chiều rộng của cửa sổ
+// h : chiều dài của cửa sổ
+//
+void onResize(int w, int h)
+{
+	winWidth = w;
+	winHeight = h;
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-w / 2, w / 2, -h / 2, h / 2, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	display(); // gọi lại cửa sổ
+}
+
+void onMoveDown(int x, int y) {
+	// Write your codes here.
+
+
+
+	// to refresh the window it calls display() function   
+	glutPostRedisplay();
+}
+
+void onMove(int x, int y) {
+	glutPostRedisplay();
+}
+
+//tốc độ dayYYY
+void rocketTimer() {
+	if (shooted)
+		rockety += 20;
+
+	if (rockety % 20 == 0)
+		rocketFire = !rocketFire;
+}
+
+#if TIMER_ON == 1
+void onTimer(int v) {
+
+
+	// Write your codes here.
+	if (gameStart && !gameStop)
+	{
+		int m;
+		timer -= 3;
+		if (timer <= 0)
+			gameStop = true;
+		rocketTimer();
+
+
+		for (int i = 0; i < 20; i++)
+			if (!ufo[i].initialized)
+			{
+				ufo[i].y = rand() % 450;
+				ufo[i].initialized = true;
+
+			}
+
+		for (int i = 0; i < 5; i++)
+			if (ufo[i].initialized) {
+				ufo[i].x += 20;
+
+				if (ufo[i].x > -670 && !ufo[i].countChecker)
+				{
+					totalUfos++;
+					ufo[i].countChecker = true;
+				}
+			}
+
+		for (int i = 0; i < 5; i++)
+			if (ufo[i].x > 430)
+			{
+				ufo[i].x = -675 - i * 400;
+				ufo[i].initialized = false;
+				ufo[i].countChecker = false;
+			}
+
+
+		for (int i = 0; i < 5; i++) {
+
+			if (ufo[i].x == rocketx && ufo[i].x == rocketx && ufo[i].y + 70 >= rockety - 210 && ufo[i].y - 70 <= rockety - 210) {
+				ufo[i].x = -675 - i * 400;
+				ufo[i].initialized = false;
+				ufo[i].countChecker = false;
+				score += 5;
+				burstUfos++;
+				lastPoint = 5;
+			}
+
+			else if (ufo[i].x + 20 >= rocketx && ufo[i].x - 20 <= rocketx && ufo[i].y >= rockety - 210 && ufo[i].y - 70 <= rockety - 210)
+			{
+				ufo[i].x = -675 - i * 400;
+				ufo[i].initialized = false;
+				ufo[i].countChecker = false;
+				score += 3;
+				burstUfos++;
+				lastPoint = 3;
+			}
+			else if (ufo[i].x + 30 >= rocketx && ufo[i].x - 30 <= rocketx && ufo[i].y + 70 >= rockety - 210 && ufo[i].y - 70 <= rockety - 210)
+			{
+				ufo[i].x = -675 - i * 400;
+				ufo[i].initialized = false;
+				ufo[i].countChecker = false;
+				score += 2;
+				burstUfos++;
+				lastPoint = 2;
+			}
+
+			else if (ufo[i].x + 65 >= rocketx && ufo[i].x - 65
+				<= rocketx && ufo[i].y + 70 >= rockety - 210 && ufo[i].y - 70 <= rockety - 210)
+			{
+				ufo[i].x = -675 - i * 400;
+				ufo[i].initialized = false;
+				ufo[i].countChecker = false;
+				score += 1;
+				burstUfos++;
+				lastPoint = 1;
+			}
+
+
+
+		}
+	}
+
+
+	//để làm mới cửa sổ nó gọi hàm display ()
+
+	glutPostRedisplay(); // thông báo cần vẽ lại hàm display()
+	int timeDiff = 0;
+	if (gameStart == true) {
+		timeDiff++;
+
+		if (timeDiff % 15 == 0 && gameStart == true)
+		{
+			int beginFrame = getMilliCount();
+			int timeDiff = getMilliCount() - beginFrame;//thời gian thực hiện xong chu trình 
+			if (timeDiff < 40)//sau 5 giây nếu khung hình xuất ra có thời gian mover<5 thì sẽ ngủ
+			{
+				sleep(40 - timeDiff);
+			}
+		}
+	}
+	glutTimerFunc(TIMER_PERIOD, onTimer, 0);
+
+
+}
+#endif
+
+void Init() {
+
+	// làm min hình khối
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+}
+
+void main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-	glutInitWindowSize(500, 650);
-	glutInitWindowPosition(200, 20);
-	glutCreateWindow("Car Game");
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	glutCreateWindow("Blowing up baloons");
 
 	glutDisplayFunc(display);
-	glutSpecialFunc(spe_key);
-	glutKeyboardFunc(processKeys);
+	glutReshapeFunc(onResize);
 
-	glOrtho(0, 100, 0, 100, -1, 1);
-	glClearColor(0.184, 0.310, 0.310, 1);
+	//
+	//đăng ký hàm sử dụng bàn phím
+	//
+	glutKeyboardFunc(onKeyDown);
+	glutSpecialFunc(onSpecialKeyDown);
 
-	glutTimerFunc(1000, timer, 0);
+	glutKeyboardUpFunc(onKeyUp);
+	glutSpecialUpFunc(onSpecialKeyUp);
+
+
+#if  TIMER_ON == 1
+	// timer event
+	glutTimerFunc(TIMER_PERIOD, onTimer, 0);//thời gian gọi lại hàm onTime
+#endif
+
+	Init();
+
 	glutMainLoop();
-
-	return 0;
 }

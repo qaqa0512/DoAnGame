@@ -8,28 +8,28 @@
 
 // Nguyen Quoc Anh - -1711061484 - 17DTHA6
 // Nguyen Hoang Cong Duy - 1711061525 - 17DTHA6
+// Cao Dang Quang - 1711061151 - 17DTHA5
 
 // Tốc độ của game
 int FPS = 50;
 
 //Điều kiện game
-int start = 0;
-int gv = 0;
+int begin = 0;
+int gameover = 0;
 int level = 0;
-
 //Bảng số
 int score = 0;
 
 //For Card Left / RIGHT
-int lrIndex = 0;
+int lefRight = 0;
 
 //Chuong ngai vat tien toi
-int car1 = 0;
-int lrIndex1 = 0;
-int car2 = +33;
-int lrIndex2 = 0;
-int car3 = +68;
-int lrIndex3 = 0;
+int ghost = 0;
+int lefRight1 = 0;
+int ghost2 = +33;
+int lefRight2 = 0;
+int ghost3 = +68;
+int lefRight3 = 0;
 
 // Thiết lập kiểu size font chữ
 const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_10; // kiểu font chữ và size của font chữ
@@ -59,8 +59,39 @@ void startGame() {
 	glEnd();
 
 
-	// Nến 
+	// Đèn trái
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex2f(3, 65);
+	glVertex2f(3, 80);
 
+	glVertex2f(8, 85);
+	glVertex2f(13, 85);
+
+	glColor3f(1.0, 1.0, 0.0);
+	glVertex2f(18, 80);
+	glVertex2f(18, 65);
+
+	glVertex2f(13, 60);
+	glVertex2f(8, 60);
+	glEnd();
+
+	// Đèn phải
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex2f(81, 65);
+	glVertex2f(81, 80);
+
+	glVertex2f(86, 85);
+	glVertex2f(91, 85);
+
+	glColor3f(1.0, 1.0, 0.0);
+	glVertex2f(96, 80);
+	glVertex2f(96, 65);
+
+	glVertex2f(91, 60);
+	glVertex2f(86, 60);
+	glEnd();
 
 	////Score Board
 	//glColor3f(0.000, 0.000, 0.000);
@@ -71,39 +102,38 @@ void startGame() {
 	//glVertex2f(80, 98 - 8);
 	//glEnd();
 
-	//Print Score
+	//Hiển thị điểm 
 	char buffer[50];
 	sprintf_s(buffer, "Ghost: %d", score);
 	glColor3f(1.0, 1.0, 1.0);
 	renderBitmapString(83, 93, (void *)font2, buffer);
 
-	//Tau vu tru
-
-		//Canh cua tau
+	//Flycam
+		//Cánh của flycam
 	glColor3f(1.000, 1.000, 1.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex + 22, 4);
-	glVertex2f(lrIndex + 26, 6);
-	glVertex2f(lrIndex + 30, 6);
-	glVertex2f(lrIndex + 34, 4);
+	glVertex2f(lefRight + 22, 4);
+	glVertex2f(lefRight + 26, 6);
+	glVertex2f(lefRight + 30, 6);
+	glVertex2f(lefRight + 34, 4);
 	glEnd();
 
-		//Than cua tau
+		//Than cua flycam
 	glColor3f(1.0, 1.0, 1.0); // mau trang
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex + 26, 1);
-	glVertex2f(lrIndex + 24, 4);
+	glVertex2f(lefRight + 26, 1);
+	glVertex2f(lefRight + 24, 4);
 
-	glVertex2f(lrIndex + 24, 8);
-	glVertex2f(lrIndex + 28, 10);
+	glVertex2f(lefRight + 24, 8);
+	glVertex2f(lefRight + 28, 10);
 	
-	glVertex2f(lrIndex + 32, 8);
-	glVertex2f(lrIndex + 32, 4);
-	glVertex2f(lrIndex + 30, 1);
+	glVertex2f(lefRight + 32, 8);
+	glVertex2f(lefRight + 32, 4);
+	glVertex2f(lefRight + 30, 1);
 	
-	glVertex2f(lrIndex + 28, 10);
-	glVertex2f(lrIndex + 30, 8);
-	glVertex2f(lrIndex + 30, 1);
+	glVertex2f(lefRight + 28, 10);
+	glVertex2f(lefRight + 30, 8);
+	glVertex2f(lefRight + 30, 1);
 	glEnd();
 
 
@@ -113,78 +143,81 @@ void startGame() {
 		//Than cua vat the la
 	glColor3f(1.00, 0.500, 0.500);// mau huong
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 26, car1 + 92);
-	glVertex2f(lrIndex1 + 24, car1 + 94);
+	glVertex2f(lefRight1 + 26, ghost + 92);
+	glVertex2f(lefRight1 + 24, ghost + 94);
 
-	glVertex2f(lrIndex1 + 24, car1 + 98);
-	glVertex2f(lrIndex1 + 28, car1 + 96);
+	glVertex2f(lefRight1 + 24, ghost + 98);
+	glVertex2f(lefRight1 + 28, ghost + 96);
 
-	glVertex2f(lrIndex1 + 32, car1 + 98);
-	glVertex2f(lrIndex1 + 32, car1 + 94);
+	glVertex2f(lefRight1 + 32, ghost + 98);
+	glVertex2f(lefRight1 + 32, ghost + 94);
 
-	glVertex2f(lrIndex1 + 30, car1 + 92);
+	glVertex2f(lefRight1 + 30, ghost + 92);
 	glEnd();
 
 		// Duoi cua vat the la
 	glColor3f(0.600, 0.400, 0.500);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex1 + 24, car1 + 100);
-	glVertex2f(lrIndex1 + 24, car1 + 98);
-	glVertex2f(lrIndex1 + 28, car1 + 96);
-	glVertex2f(lrIndex1 + 32, car1 + 98);
-	glVertex2f(lrIndex1 + 32, car1 + 100);
+	glVertex2f(lefRight1 + 24, ghost + 100);
+	glVertex2f(lefRight1 + 24, ghost + 98);
+	glVertex2f(lefRight1 + 28, ghost + 96);
+	glVertex2f(lefRight1 + 32, ghost + 98);
+	glVertex2f(lefRight1 + 32, ghost + 100);
 	glEnd();
-	car1--;
-	if (car1<-100) {
-		car1 = 0;
-		lrIndex1 = lrIndex;
+
+	ghost--;
+
+	if (ghost<-100) {
+		ghost = 0;
+		lefRight1 = lefRight;
 		score++;
 	}
+
 	//KIll check car1
-	if ((abs(lrIndex - lrIndex1)<8) && (car1 + 100<10)) {
-		start = 0;
-		gv = 1;
+	if ((abs(lefRight - lefRight1)<8) && (ghost + 100<10)) {
+		begin = 0;
+		gameover = 1;
 	}
 
 	//Ma quỷ 2
 	// Thân cua vat the 2
 	glColor3f(0.294, 0.000, 0.510);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 26, car2 + 92);
-	glVertex2f(lrIndex2 + 24, car2 + 94);
+	glVertex2f(lefRight2 + 26, ghost2 + 92);
+	glVertex2f(lefRight2 + 24, ghost2 + 94);
 
-	glVertex2f(lrIndex2 + 24, car2 + 96);
-	glVertex2f(lrIndex2 + 26, car2 + 98);
+	glVertex2f(lefRight2 + 24, ghost2 + 96);
+	glVertex2f(lefRight2 + 26, ghost2 + 98);
 
-	glVertex2f(lrIndex2 + 28, car2 + 96);
-	glVertex2f(lrIndex2 + 30, car2 + 98);
+	glVertex2f(lefRight2 + 28, ghost2 + 96);
+	glVertex2f(lefRight2 + 30, ghost2 + 98);
 
-	glVertex2f(lrIndex2 + 32, car2 + 96);
-	glVertex2f(lrIndex2 + 32, car2 + 94);
+	glVertex2f(lefRight2 + 32, ghost2 + 96);
+	glVertex2f(lefRight2 + 32, ghost2 + 94);
 
-	glVertex2f(lrIndex2 + 30, car2 + 92);
+	glVertex2f(lefRight2 + 30, ghost2 + 92);
 	glEnd();
 
-	// Doi cua vat the 2
+	// Duoi cua vat the 2
 	glColor3f(1.000, 0.000, 1.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex2 + 24, car2 + 100);
-	glVertex2f(lrIndex2 + 24, car2 + 98);
-	glVertex2f(lrIndex2 + 28, car2 + 96);
-	glVertex2f(lrIndex2 + 32, car2 + 98);
-	glVertex2f(lrIndex2 + 32, car2 + 100);
+	glVertex2f(lefRight2 + 24, ghost2 + 100);
+	glVertex2f(lefRight2 + 24, ghost2 + 98);
+	glVertex2f(lefRight2 + 28, ghost2 + 96);
+	glVertex2f(lefRight2 + 32, ghost2 + 98);
+	glVertex2f(lefRight2 + 32, ghost2 + 100);
 	glEnd();
 
-	car2--;
-	if (car2<-100) {
-		car2 = 0;
-		lrIndex2 = lrIndex;
+	ghost2--;
+	if (ghost2<-100) {
+		ghost2 = 0;
+		lefRight2 = lefRight;
 		score++;
 	}
 	//KIll check car2
-	if ((abs(lrIndex - lrIndex2)<8) && (car2 + 100<10)) {
-		start = 0;
-		gv = 1;
+	if ((abs(lefRight - lefRight2)<8) && (ghost2 + 100<10)) {
+		begin = 0;
+		gameover = 1;
 	}
 
 
@@ -192,38 +225,37 @@ void startGame() {
 	// Thân của vật thể
 	glColor3f(1.000, 0.500, 0.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 24, car3 + 98);
-	glVertex2f(lrIndex3 + 25, car3 + 99);
+	glVertex2f(lefRight3 + 24, ghost3 + 98);
+	glVertex2f(lefRight3 + 25, ghost3 + 99);
 
-	glVertex2f(lrIndex3 + 31, car3 + 99);
-	glVertex2f(lrIndex3 + 32, car3 + 98);
+	glVertex2f(lefRight3 + 31, ghost3 + 99);
+	glVertex2f(lefRight3 + 32, ghost3 + 98);
 	
 
 	//Đuôi vật thể
 	glColor3f(1.000, 1.000, 0.000);
 	glBegin(GL_POLYGON);
-	glVertex2f(lrIndex3 + 24, car3 + 92);
-	glVertex2f(lrIndex3 + 24, car3 + 94);
+	glVertex2f(lefRight3 + 24, ghost3 + 92);
+	glVertex2f(lefRight3 + 24, ghost3 + 94);
 
-	glVertex2f(lrIndex3 + 26, car3 + 94);
-	glVertex2f(lrIndex3 + 28, car3 + 93);
-	glVertex2f(lrIndex3 + 30, car3 + 94);
+	glVertex2f(lefRight3 + 26, ghost3 + 94);
+	glVertex2f(lefRight3 + 28, ghost3 + 93);
+	glVertex2f(lefRight3 + 30, ghost3 + 94);
 
-	glVertex2f(lrIndex3 + 32, car3 + 94);
-	glVertex2f(lrIndex3 + 32, car3 + 92);
+	glVertex2f(lefRight3 + 32, ghost3 + 94);
+	glVertex2f(lefRight3 + 32, ghost3 + 92);
 
 	glEnd();
-	car3--;
-	if (car3<-100) {
-		car3 = 0;
-		lrIndex3 = lrIndex;
+	ghost3--;
+	if (ghost3<-100) {
+		ghost3 = 0;
+		lefRight3 = lefRight;
 		score++;
 	}
 	//KIll check car3
-	if ((abs(lrIndex - lrIndex3)<8) && (car3 + 100<10)) {
-		start = 0;
-		gv = 1;
-
+	if ((abs(lefRight - lefRight3)<8) && (ghost3 + 100<10)) {
+		begin = 0;
+		gameover = 1;
 	}
 
 }
@@ -245,15 +277,13 @@ void fristDesign() {
 	glColor3f(0.410, 0.410, 0.410);
 	glBegin(GL_TRIANGLES);
 	glVertex2f(50, 55);
-	glVertex2f(85, 0);
-	glVertex2f(15, 0);
+	glVertex2f(80, 0);
+	glVertex2f(20, 0);
 	glEnd();
 
-	
-
-	//Flycam khám phá nhà ma
+	////Flycam khám phá nhà ma
 		//Cánh cua flycam
-	glColor3f(1.000, 1.000, 1.000);
+	glColor3f(1.000, 0.000, 0.000);
 	glBegin(GL_POLYGON);
 	glVertex2f(42, 11+3);
 	glVertex2f(46, 13+3);
@@ -368,6 +398,81 @@ void fristDesign() {
 	glVertex2f(40, 55);
 	glEnd();
 
+		// Hàng rào trái
+	// Thanh trái hàng rào trái
+	glColor3f(1.0, 0.5, 0.0); // red color
+	glBegin(GL_POLYGON);
+	glVertex2f(14, 54);
+	glVertex2f(14, 62);
+
+	glVertex2f(17, 62);
+	glVertex2f(17, 54);
+	glEnd();
+
+	// Thanh giữa hàng rào trái
+	glBegin(GL_POLYGON);
+	glVertex2f(14+10, 54);
+	glVertex2f(14+10, 62);
+
+	glVertex2f(17+10, 62);
+	glVertex2f(17+10, 54);
+	glEnd();
+
+	// Thanh phải hàng rào trái
+	glBegin(GL_POLYGON);
+	glVertex2f(14 + 20, 54);
+	glVertex2f(14 + 20, 62);
+
+	glVertex2f(17 + 20, 62);
+	glVertex2f(17 + 20, 54);
+	glEnd();
+
+	// Thanh dưới hàng rào trái
+	glBegin(GL_POLYGON);
+	glVertex2f(14, 54);
+	glVertex2f(36, 54);
+
+	glVertex2f(36, 57);
+	glVertex2f(14, 57);
+	glEnd();
+
+	//hàng rào phải
+	// thanh phải của hàng rào phải
+	glColor3f(1.0, 0.5, 0.0); // red color
+	glBegin(GL_POLYGON);
+	glVertex2f(64, 54);
+	glVertex2f(64, 62);
+
+	glVertex2f(67, 62);
+	glVertex2f(67, 54);
+	glEnd();
+
+	// Thanh giữa hàng rào phải
+	glBegin(GL_POLYGON);
+	glVertex2f(64 + 10, 54);
+	glVertex2f(64 + 10, 62);
+
+	glVertex2f(67 + 10, 62);
+	glVertex2f(67 + 10, 54);
+	glEnd();
+
+	// Thanh phải hàng rào phải
+	glBegin(GL_POLYGON);
+	glVertex2f(64 + 20, 54);
+	glVertex2f(64 + 20, 62);
+
+	glVertex2f(67 + 20, 62);
+	glVertex2f(67 + 20, 54);
+	glEnd();
+
+	// Thanh dưới hàng rào phải
+	glBegin(GL_POLYGON);
+	glVertex2f(64, 54);
+	glVertex2f(86, 54);
+
+	glVertex2f(86, 57);
+	glVertex2f(64, 57);
+	glEnd();
 
 		//Mặt trăng máu
 	glColor3f(1.0,0.0,0.0); // red color
@@ -413,18 +518,6 @@ void fristDesign() {
     glEnd();
 
 
-	// Bụi cỏ hoang
-	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
-	glBegin(GL_POLYGON);
-	glVertex2f(5, 10);
-	glVertex2f(19, 10);
-	glVertex2f(19, 15);
-	glVertex2f(6, 12);
-	glVertex2f(16, 12);
-	glVertex2f(5, 15);
-	glEnd();
-
-
 	// Bia mộ 1
 	glColor3f(0.80, 0.80, 0.80); // màu nâu sáng
 	glBegin(GL_POLYGON);
@@ -434,36 +527,111 @@ void fristDesign() {
 	glVertex2f(75, 50);
 	glEnd();
 
-	glColor3f(0.80, 0.80, 0.80); // màu nâu sáng
-	glBegin(GL_POLYGON);
+	 // màu nâu sáng
+	glBegin(GL_POLYGON);glColor3f(0.80, 0.80, 0.80);
 	glVertex2f(72, 35);
 	glVertex2f(89, 35);
 	glVertex2f(89, 45);
 	glVertex2f(72, 45);
 	glEnd();
+	
+	// Bia mộ 3
+	glColor3f(0.80, 0.80, 0.80); // màu nâu sáng
+	glBegin(GL_POLYGON);
+	glVertex2f(77,18);
+	glVertex2f(77, 26);
+	glVertex2f(80, 28);
+	glVertex2f(92, 28);
+	glVertex2f(95, 26);
+	glVertex2f(95, 18);
+	glEnd();
 
-	// Bụi cỏ hoang
+		// Bụi cỏ ven đường trái
+	// Đỉnh cỏ trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(81, 7);
+	glVertex2f(83, 10);
+	glVertex2f(86, 7);
+	glEnd();
+
+	// Đỉnh cỏ giữa trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(81+5, 7);
+	glVertex2f(83+7, 13);
+	glVertex2f(86+5, 7);
+	glEnd();
+
+	// Đỉnh cỏ phải của trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(81 + 10, 7);
+	glVertex2f(83+13, 10);
+	glVertex2f(86 + 11, 7);
+	glEnd();
+
+		// Thân của bụi cỏ ven đường phải
 	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
 	glBegin(GL_POLYGON);
-	glVertex2f(81, 10);
-	glVertex2f(97, 10);
-	glVertex2f(97, 15);
-	glVertex2f(84, 12);
-	glVertex2f(94, 12);
-	glVertex2f(81, 15);
+	glVertex2f(81, 5);
+	glVertex2f(97, 5);
+	glVertex2f(97, 7);
+	glVertex2f(81, 7);
+	glEnd();
+
+		// Bụi cỏ ven đường trái
+	// Đỉnh cỏ trái của trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(3, 5);
+	glVertex2f(2, 10);
+	glVertex2f(7, 7);
+	glEnd();
+
+	// Đỉnh cỏ giữa của trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(3+5, 5);
+	glVertex2f(5+3, 12);
+	glVertex2f(7+5, 7);
+	glEnd();
+
+	//// Đỉnh cỏ giữa của trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(3 + 7, 5);
+	glVertex2f(10 + 3, 14);
+	glVertex2f(7 + 7, 7);
+	glEnd();
+
+	//// Đỉnh cỏ phải của trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_TRIANGLES);
+	glVertex2f(3 + 10, 5);
+	glVertex2f(13 + 7, 14);
+	glVertex2f(19, 7);
+	glEnd();
+
+	// Thân bụi cỏ ven đường trái
+	glColor3f(0.0, 1.0, 0.0); // màu nâu sáng
+	glBegin(GL_POLYGON);
+	glVertex2f(3, 5);
+	glVertex2f(19, 5);
+	glVertex2f(19, 7);
+	glVertex2f(3, 7);
 	glEnd();
 
 
-	////Text Information in Frist Page
-	if (gv == 1) {
-		glColor3f(1.000, 0.000, 0.000);
-		renderBitmapString(40, 75, (void *)font2, "YOU DIED :((");
-		glColor3f(1.000, 0.000, 0.000);
-		char buffer2[50];
-		sprintf_s(buffer2, "Your Score is : %d", score);
-		renderBitmapString(33, 60 - 4 + 10, (void *)font1, buffer2);
-
-	}
+	//////Text Information in Frist Page
+	//if (gv == 1) {
+	//	glColor3f(1.000, 0.000, 0.000);
+	//	renderBitmapString(40, 75, (void *)font2, "YOU DIED :((");
+	//	glColor3f(1.000, 0.000, 0.000);
+	//	char buffer2[50];
+	//	sprintf_s(buffer2, "Your Score is : %d", score);
+	//	renderBitmapString(33, 60 - 4 + 10, (void *)font1, buffer2);
+	//}
 
 	// vị trí tiêu đề xuất hiện trên màn hình
 	glColor3f(0.0, 0.0, 0.0);
@@ -495,9 +663,13 @@ void fristDesign() {
 	renderBitmapString(76, 45, (void *)font2, "R.I.P");
 	renderBitmapString(74, 39, (void *)font2, "A B C Z");
 
-	// điêu khác tên trên bia mộ 1
+	// điêu khác tên trên bia mộ 2
 	glColor3f(0.0, 0.0, 0.0);
 	renderBitmapString(26.5, 47, (void *)font2, "R.I.P");
+
+	// điêu khác tên trên bia mộ 3
+	glColor3f(0.0, 0.0, 0.0);
+	renderBitmapString(81.5, 22.5, (void *)font2, "R.I.P");
 }
 
 
@@ -505,9 +677,7 @@ void fristDesign() {
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	if (start == 1) {
-		// glClearColor(0.627, 0.322, 0.176,1);
-
+	if (begin == 1) {
 		glClearColor(0.36, 0.25, 0.20, 0.0);
 		startGame();
 	}
@@ -525,7 +695,7 @@ void display() {
 
 
 
-void spe_key(int key, int x, int y) {
+void speacialKey(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_DOWN:
 		if (FPS>(50 + (level * 2)))
@@ -536,20 +706,19 @@ void spe_key(int key, int x, int y) {
 		break;
 
 	case GLUT_KEY_LEFT:
-		if (lrIndex >= 0) {
-			lrIndex = lrIndex - (FPS / 10);
-			if (lrIndex<0) {
-				lrIndex = -1;
+		if (lefRight >= 0) {
+			lefRight = lefRight - (FPS / 10);
+			if (lefRight<0) {
+				lefRight = -1;
 			}
 		}
 		break;
 
-
 	case GLUT_KEY_RIGHT:
-		if (lrIndex <= 44) {
-			lrIndex = lrIndex + (FPS / 10);
-			if (lrIndex>44) {
-				lrIndex = 45;
+		if (lefRight <= 44) {
+			lefRight = lefRight + (FPS / 10);
+			if (lefRight>44) {
+				lefRight = 45;
 			}
 		}
 		break;
@@ -560,22 +729,22 @@ void spe_key(int key, int x, int y) {
 
 }
 
-void processKeys(unsigned char key, int x, int y) {
+void moveKey(unsigned char key, int x, int y) {
 
 	switch (key)
 	{
 	case ' ':
-		if (start == 0) {
-			start = 1;
-			gv = 0;
+		if (begin == 0) {
+			begin = 1;
+			gameover = 0;
 			FPS = 50;
-			lrIndex = 0;
-			car1 = 0;
-			lrIndex1 = 0;
-			car2 = 32;
-			lrIndex2 = 0;
-			car3 = 68;
-			lrIndex3 = 0;
+			lefRight = 0;
+			ghost = 0;
+			lefRight1 = 0;
+			ghost2 = 32;
+			lefRight2 = 0;
+			ghost3 = 68;
+			lefRight3 = 0;
 			score = 0;
 			level = 0;
 		}
@@ -604,9 +773,9 @@ int main(int argc, char *argv[])
 	glutInitWindowPosition(200, 20);
 	glutCreateWindow("The Haunted House 2020 - Quoc Anh - Cong Duy - Quang Dang"); // tiêu đề hiện thị lên windows
 
-	glutDisplayFunc(display); // 
-	glutSpecialFunc(spe_key);
-	glutKeyboardFunc(processKeys);
+	glutDisplayFunc(display);
+	glutSpecialFunc(speacialKey);
+	glutKeyboardFunc(moveKey);
 
 	glOrtho(0, 100, 0, 100, -1, 1);
 	glClearColor(0.184, 0.310, 0.310, 1);
