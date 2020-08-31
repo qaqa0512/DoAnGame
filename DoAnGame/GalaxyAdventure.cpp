@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <mmsystem.h>
+
 
 // Nguyen Quoc Anh - -1711061484 - 17DTHA6
 // Nguyen Hoang Cong Duy - 1711061525 - 17DTHA6
@@ -13,14 +15,17 @@
 // Tốc độ của game
 int FPS = 50;
 
+// Âm thanh cho game
+int sound = 0;
+
 //Điều kiện game
-int begin = 0;
-int gameover = 0;
-int level = 0;
+int begin = 0; // Begin
+
+int gameover = 0; // gameOver
 //Bảng số
 int score = 0;
 
-//For Card Left / RIGHT
+//Khoảng cách trái phải
 int lefRight = 0;
 
 //Chuong ngai vat tien toi
@@ -46,8 +51,8 @@ void renderBitmapString(float x, float y, void *font, const char *string) {
 }
 
 // Bắt Đầu Trò Chơi
-void startGame() {
-
+void beginGame()
+{
 	//Sảnh của ngôi nhà ma
 	glBegin(GL_POLYGON);
 	glColor3f(0.556, 0.137, 0.137);
@@ -93,28 +98,44 @@ void startGame() {
 	glVertex2f(86, 60);
 	glEnd();
 
-	////Score Board
-	//glColor3f(0.000, 0.000, 0.000);
-	//glBegin(GL_POLYGON);
-	//glVertex2f(80, 97);
-	//glVertex2f(100, 97);
-	//glVertex2f(100, 98 - 8);
-	//glVertex2f(80, 98 - 8);
-	//glEnd();
+		//Instructions
+	// Vẽ bảng hướng dẫn
+	glColor3f(0.000, 0.000, 0.000);
+	glBegin(GL_POLYGON);
+	glVertex2f(0, 10);
+	glVertex2f(23, 10);
+	glVertex2f(23, 30);
+	glVertex2f(0, 30);
+	glEnd();
+	// Tiêu đề hương dẫn
+	glColor3f(1.0, 1.0, 1.0);
+	renderBitmapString(1.5, 27, (void *)font2, "INSTUCTIONS");// vị trí hiển thị hướng dẫn
 
+	glColor3f(1.0, 1.0, 1.0);
+	renderBitmapString(3, 23, (void *)font2, "<: LEFT");// vị trí hiện thị hướng dẫn sang trái
+
+	glColor3f(1.0, 1.0, 1.0);
+	renderBitmapString(3, 20, (void *)font2, ">: RIGHT");// vị trí hiển thị hướng dẫn sang phải
+
+	glColor3f(1.0, 1.0, 1.0);
+	renderBitmapString(3, 17, (void *)font2, "ESC: exit");// vị trí hiển thị hướng dẫn thoát
+
+	glColor3f(1.0, 1.0, 1.0);
+	renderBitmapString(3, 11, (void *)font2, "ENJOY IT!!!");// vị trí hiển thị chúc vui vẻ
+
+	
 	//Hiển thị điểm 
 	char buffer[50];
-	sprintf_s(buffer, "Ghost: %d", score);
+	sprintf_s(buffer, "Ghost:%d", score);
 	glColor3f(1.0, 1.0, 1.0);
-	renderBitmapString(83, 93, (void *)font2, buffer);
+	renderBitmapString(83, 93, (void *)font2, buffer);// vị trí hiện thị điểm 
 
 	//Flycam
 		//Cánh của flycam
-	glColor3f(1.000, 1.000, 1.000);
-	glBegin(GL_POLYGON);
+	glColor3f(1.000, 0.000, 0.000);
+	glBegin(GL_TRIANGLES);
 	glVertex2f(lefRight + 22, 4);
-	glVertex2f(lefRight + 26, 6);
-	glVertex2f(lefRight + 30, 6);
+	glVertex2f(lefRight + 28, 10);
 	glVertex2f(lefRight + 34, 4);
 	glEnd();
 
@@ -173,7 +194,7 @@ void startGame() {
 		score++;
 	}
 
-	//KIll check car1
+	////Kiểm tra nếu flycam chạm trán phải ma thì sẽ bị phá hủy
 	if ((abs(lefRight - lefRight1)<8) && (ghost + 100<10)) {
 		begin = 0;
 		gameover = 1;
@@ -214,12 +235,12 @@ void startGame() {
 		lefRight2 = lefRight;
 		score++;
 	}
-	//KIll check car2
+	//Kiểm tra nếu flycam chạm trán phải ma thì sẽ bị phá hủy
 	if ((abs(lefRight - lefRight2)<8) && (ghost2 + 100<10)) {
 		begin = 0;
 		gameover = 1;
 	}
-
+	 
 
 	//Ma quỷ 3
 	// Thân của vật thể
@@ -246,21 +267,22 @@ void startGame() {
 	glVertex2f(lefRight3 + 32, ghost3 + 92);
 
 	glEnd();
+
 	ghost3--;
-	if (ghost3<-100) {
+	if (ghost3 < -100) {
 		ghost3 = 0;
 		lefRight3 = lefRight;
 		score++;
 	}
-	//KIll check car3
-	if ((abs(lefRight - lefRight3)<8) && (ghost3 + 100<10)) {
+	//Kiểm tra nếu flycam chạm trán phải ma thì sẽ bị phá hủy
+	if ((abs(lefRight - lefRight3) < 8) && (ghost3 + 100 < 10)) {
 		begin = 0;
 		gameover = 1;
 	}
-
 }
 
-void fristDesign() {
+// Layout của The Haunted House
+void layOut() {
 
 	//Ảnh nền của ngôi nhà ma ám
 	glColor3f(0.73, 0.16, 0.96); // medium purple
@@ -268,8 +290,8 @@ void fristDesign() {
 	glVertex2f(0, 55);
 	glVertex2f(100, 55);
 	glColor3f(0.55, 0.09, 0.09); // Scarlet color
-	glVertex2f(100, 50 - 50);
-	glVertex2f(0, 50 - 50);
+	glVertex2f(100, 0);
+	glVertex2f(0, 0);
 	glEnd();
 
 
@@ -284,29 +306,25 @@ void fristDesign() {
 	////Flycam khám phá nhà ma
 		//Cánh cua flycam
 	glColor3f(1.000, 0.000, 0.000);
-	glBegin(GL_POLYGON);
-	glVertex2f(42, 11+3);
-	glVertex2f(46, 13+3);
-	glVertex2f(50, 13+3);
-	glVertex2f(54, 11+3);
+	glBegin(GL_TRIANGLES);
+	glVertex2f(39, 21);
+	glVertex2f(50, 30);
+	glVertex2f(61, 21);
 	glEnd();
 
 		// Thân của flycam
 	glColor3f(1.0, 1.0, 1.0); // mau trang
 	glBegin(GL_POLYGON);
-	glVertex2f(46, 11);
-	glVertex2f(44, 14);
-
-	glVertex2f(44, 18);
-	glVertex2f(48, 20);
-
-	glVertex2f(52, 18);
-	glVertex2f(52, 14);
-	glVertex2f(50, 11);
-
-	glVertex2f(48, 20);
-	glVertex2f(50, 18);
-	glVertex2f(50, 11);
+	glVertex2f(43, 20);
+	glVertex2f(43,30);
+	glVertex2f(50, 35);
+	glVertex2f(57, 30);
+	glVertex2f(57, 20);
+	glVertex2f(53, 15);
+	glVertex2f(47, 15);
+	//glVertex2f(48, 20);
+	//glVertex2f(50, 18);
+	//glVertex2f(50, 11);
 	glEnd();
 
 	//Bầu trời u ám
@@ -332,20 +350,6 @@ void fristDesign() {
 	glVertex2f(86.5, 87);
 	glVertex2f(80, 85);
 
-	//glColor3f(0.0, 0.0, 0.0); // Dark Orchid color
-	//glBegin(GL_TRIANGLES);
-	//glVertex2f(80, 90);
-	//glVertex2f(90, 90);
-
-	//glVertex2f(85, 85);
-	/*glVertex2f(95, 90);
-
-	glVertex2f(80,90);*/
-
-
-	/*glVertex2f(83, 88);
-	glVertex2f(80, 86);
-	glVertex2f(77, 88);*/
 	glEnd();
 
 		// Ngôi nhà ma ám
@@ -623,17 +627,9 @@ void fristDesign() {
 	glEnd();
 
 
-	//////Text Information in Frist Page
-	//if (gv == 1) {
-	//	glColor3f(1.000, 0.000, 0.000);
-	//	renderBitmapString(40, 75, (void *)font2, "YOU DIED :((");
-	//	glColor3f(1.000, 0.000, 0.000);
-	//	char buffer2[50];
-	//	sprintf_s(buffer2, "Your Score is : %d", score);
-	//	renderBitmapString(33, 60 - 4 + 10, (void *)font1, buffer2);
-	//}
+	
 
-	// vị trí tiêu đề xuất hiện trên màn hình
+	// vị trí tiêu đề xuất hiện trên màn hình 
 	glColor3f(0.0, 0.0, 0.0);
 	renderBitmapString(35, 85, (void *)font2, "THE HAUNTED HOUSE"); 
 	renderBitmapString(46.5, 81, (void *)font2, "2020");
@@ -643,14 +639,12 @@ void fristDesign() {
 	renderBitmapString(14.5, 74.5, (void *)font2, "DO U WANT TO EXPLORE THE HAUNTED HOUSE???");
 
 
-	/*glColor3f(0.000, 1.000, 0.000);
-	renderBitmapString(30, 50 + 10, (void *)font2, "Press SPACE to START"); 
-	renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
-*/
-	//// vị trí hướng dẫn di chuyển
+	glColor3f(1.0, 1.0, 0.0);
+	renderBitmapString(22.5, 7, (void *)font2, "PRESS b TO BEGIN YOUR ADVENTURE"); 
+	//renderBitmapString(30, 50 - 3 + 10, (void *)font2, "Press ESC to Exit");
+
+	////vị trí hướng dẫn di chuyển
 	//glColor3f(1.000, 1.000, 1.000);
-	//renderBitmapString(30, 50 - 6 + 10, (void *)font3, "Press UP to increase Speed");
-	//renderBitmapString(30, 50 - 8 + 10, (void *)font3, "Press DOWN to decrease Speed");
 	//renderBitmapString(30, 50 - 10 + 10, (void *)font3, "Press RIGHT to turn Right");
 	//renderBitmapString(30, 50 - 12 + 10, (void *)font3, "Press LEFT to turn Left");
 
@@ -670,41 +664,63 @@ void fristDesign() {
 	// điêu khác tên trên bia mộ 3
 	glColor3f(0.0, 0.0, 0.0);
 	renderBitmapString(81.5, 22.5, (void *)font2, "R.I.P");
+
+	// Tên flycam: FC-A56
+	glColor3f(0.0, 0.0, 0.0);
+	renderBitmapString(44.5, 27, (void *)font2, "FC-A56");
+	renderBitmapString(44.5, 20, (void *)font2, "Flycam");
+
+	
+	
+
+	////Hiện thị thông tin khi kết thúc game
+	if (gameover == 1) {
+		glBegin(GL_POLYGON);
+		glColor3f(0.91, 0.76, 0.65); // màu nâu sáng
+		glVertex2f(30, 20);
+		glVertex2f(30, 40);
+		glColor3f(0.36, 0.25, 0.20);
+		glVertex2f(70, 40);
+		glVertex2f(70, 20);
+		glEnd();
+
+		// Chú thích
+		glColor3f(0.0, 0.0, 0.0);
+		renderBitmapString(33, 35, (void *)font2, "FC-A56 IS DESTROYED");
+
+		// Hiện thị số con ma mà flycam quay lại được
+		glColor3f(0.0, 0.0, 0.0);
+		char buffer2[50];
+		renderBitmapString(33, 28, (void *)font2, "GHOSTS WERE FILMED:");
+		sprintf(buffer2, "%d", score);
+		renderBitmapString(48.5, 24, (void *)font2, buffer2);
+	}
 }
 
 
-
+// Hiện thị màn hình lên windows
 void display() {
-	glClear(GL_COLOR_BUFFER_BIT);
 
+	glClear(GL_COLOR_BUFFER_BIT);// xóa màu pixel trong buffer
+	// kiểm tra nếu begin == 1 (bắt đầu thì sẽ vào trang chính để chơi)
 	if (begin == 1) {
 		glClearColor(0.36, 0.25, 0.20, 0.0);
-		startGame();
+		beginGame();
 	}
-
+	// kiểm tra nếu chưa thì sẽ ở trang layout 
 	else {
-		fristDesign();
-		//glClearColor(0.184, 0.310, 0.310,1);
+		layOut();	
 	}
-
-
 
 	glFlush();
 	glutSwapBuffers();
 }
 
 
-
+// Hàm sự kiện bàn phím
 void speacialKey(int key, int x, int y) {
 	switch (key) {
-	case GLUT_KEY_DOWN:
-		if (FPS>(50 + (level * 2)))
-			FPS = FPS - 2;
-		break;
-	case GLUT_KEY_UP:
-		FPS = FPS + 2;
-		break;
-
+	// Nhấn phím Left để chuyển hướng sang trái
 	case GLUT_KEY_LEFT:
 		if (lefRight >= 0) {
 			lefRight = lefRight - (FPS / 10);
@@ -713,7 +729,7 @@ void speacialKey(int key, int x, int y) {
 			}
 		}
 		break;
-
+	// Nhấn phím Right để chuyển hướng sang phải
 	case GLUT_KEY_RIGHT:
 		if (lefRight <= 44) {
 			lefRight = lefRight + (FPS / 10);
@@ -726,14 +742,15 @@ void speacialKey(int key, int x, int y) {
 	default:
 		break;
 	}
-
 }
 
+// Hàm sụ kiện bàn phím bằng các ký tự
 void moveKey(unsigned char key, int x, int y) {
 
 	switch (key)
 	{
-	case ' ':
+	// Nhấn nút 'b' để bắt đầu chơi
+	case 'b':
 		if (begin == 0) {
 			begin = 1;
 			gameover = 0;
@@ -746,10 +763,11 @@ void moveKey(unsigned char key, int x, int y) {
 			ghost3 = 68;
 			lefRight3 = 0;
 			score = 0;
-			level = 0;
+			sound = PlaySound(TEXT("Ghost.wav"),NULL, SND_FILENAME | SND_ASYNC);
 		}
 		break;
 
+		// Nhấn ESC để thoát
 	case 27:
 		exit(0);
 		break;
@@ -758,6 +776,7 @@ void moveKey(unsigned char key, int x, int y) {
 	}
 }
 
+// Xử lý tốc độ của game FPS
 void timer(int) {
 	glutPostRedisplay(); // cập nhật lại màn hình
 	glutTimerFunc(1000 / FPS, timer, 0);
@@ -767,20 +786,20 @@ void timer(int) {
 
 int main(int argc, char *argv[])
 {
-	glutInit(&argc, argv); // 
+	glutInit(&argc, argv); 
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-	glutInitWindowSize(500, 650);
-	glutInitWindowPosition(200, 20);
+	glutInitWindowSize(500, 650);// kích thước của windows
+	glutInitWindowPosition(200, 20); // vị trí màn hình xuất hiện
 	glutCreateWindow("The Haunted House 2020 - Quoc Anh - Cong Duy - Quang Dang"); // tiêu đề hiện thị lên windows
-
-	glutDisplayFunc(display);
-	glutSpecialFunc(speacialKey);
-	glutKeyboardFunc(moveKey);
+	
+	glutDisplayFunc(display); // hiện thị ảnh lên windows
+	glutSpecialFunc(speacialKey); // sự kiện bàn phím
+	glutKeyboardFunc(moveKey); // sự kiện bàn phím
 
 	glOrtho(0, 100, 0, 100, -1, 1);
-	glClearColor(0.184, 0.310, 0.310, 1);
+	glClearColor(0.184, 0.310, 0.310, 1); // xóa màu
 
-	glutTimerFunc(1000, timer, 0);
+	glutTimerFunc(1000, timer, 0); // xử lý tốc độ của game FPS
 	glutMainLoop();
 
 	return 0;
